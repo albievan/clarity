@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Clarity — Database Schema Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A1628;--blue:#1F4E79;--blue-mid:#2E75B6;--teal:#00B4D8;
+  --amber:#F4A261;--red:#E05252;--green:#52B788;
+  --surface:#F7F9FC;--border:#DDE3ED;--text:#1A2540;--text-2:#4A5568;--text-3:#8A97A8;
+  --font-d:'Cormorant Garamond',Georgia,serif;
+  --font:'DM Sans',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html{font-size:13px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--surface);color:var(--text);line-height:1.5}
+.page{max-width:1400px;margin:0 auto;padding:24px}
+
+/* HEADER */
+.page-header{background:var(--navy);color:#fff;padding:32px 40px;border-radius:10px;margin-bottom:24px}
+.page-header-inner{display:flex;align-items:center;gap:20px;margin-bottom:16px}
+.logo-mark{width:40px;height:40px}
+.page-title{font-family:var(--font-d);font-size:2rem;color:#fff}
+.page-sub{color:rgba(255,255,255,0.55);font-size:0.875rem}
+.header-badges{display:flex;gap:8px;flex-wrap:wrap}
+.hbadge{padding:4px 10px;border-radius:100px;font-size:0.7rem;font-weight:600;letter-spacing:0.05em;border:1px solid}
+.hbadge-teal{background:rgba(0,180,216,0.15);border-color:rgba(0,180,216,0.3);color:var(--teal)}
+.hbadge-blue{background:rgba(46,117,182,0.15);border-color:rgba(46,117,182,0.3);color:#7ABEE0}
+.hbadge-green{background:rgba(82,183,136,0.15);border-color:rgba(82,183,136,0.3);color:#7ACCA8}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px 16px;text-align:center}
+.stat-card-num{font-family:var(--font-d);font-size:1.8rem;font-weight:600;color:var(--blue);line-height:1}
+.stat-card-label{font-size:0.68rem;color:var(--text-3);margin-top:4px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
+
+/* NAV */
+.toc{background:#fff;border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:24px}
+.toc-title{font-weight:600;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px}
+.toc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.toc-link{display:block;padding:5px 8px;border-radius:4px;color:var(--blue-mid);font-size:0.78rem;text-decoration:none;transition:background 0.15s}
+.toc-link:hover{background:var(--surface);color:var(--blue)}
+
+/* SECTION */
+.section{margin-bottom:32px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+.section-num{width:28px;height:28px;border-radius:6px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;flex-shrink:0}
+.section-title{font-family:var(--font-d);font-size:1.4rem;color:var(--text)}
+.section-desc{color:var(--text-3);font-size:0.78rem}
+
+/* TABLE CARDS */
+.tables-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tables-grid-2{grid-template-columns:repeat(2,1fr)}
+.tables-grid-1{grid-template-columns:1fr}
+.tbl-card{background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:0.78rem}
+.tbl-card-header{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.tbl-card-name{font-family:var(--mono);font-weight:500;font-size:0.82rem;color:var(--navy)}
+.tbl-card-meta{display:flex;gap:6px;align-items:center}
+.tbl-schema{font-size:0.65rem;padding:2px 6px;border-radius:3px;font-weight:600;font-family:var(--mono)}
+.schema-platform{background:#EBF3FB;color:var(--blue)}
+.schema-auth{background:#FFF0F0;color:#C03030}
+.schema-ref{background:#F0FFF4;color:#2D8B5F}
+.schema-finance{background:#FFF8EC;color:#8B5000}
+.schema-workflow{background:rgba(46,117,182,0.1);color:var(--blue-mid)}
+.schema-audit{background:#F5F0FF;color:#6B21A8}
+.col-count{font-size:0.65rem;color:var(--text-3)}
+.tbl-cols{padding:0}
+.tbl-col-row{display:grid;grid-template-columns:140px 1fr auto;align-items:center;padding:6px 14px;border-bottom:1px solid rgba(221,227,237,0.5);gap:8px}
+.tbl-col-row:last-child{border-bottom:none}
+.tbl-col-row.pk{background:rgba(0,180,216,0.04)}
+.tbl-col-row.fk{background:rgba(82,183,136,0.03)}
+.col-name{font-family:var(--mono);font-size:0.75rem;color:var(--text);font-weight:500}
+.col-name.pk-name{color:var(--teal)}
+.col-name.fk-name{color:var(--green)}
+.col-type{font-family:var(--mono);font-size:0.68rem;color:var(--blue-mid)}
+.col-badge{font-size:0.6rem;font-weight:700;padding:1px 5px;border-radius:3px;white-space:nowrap}
+.badge-pk{background:rgba(0,180,216,0.12);color:#007A99}
+.badge-fk{background:rgba(82,183,136,0.12);color:#2D8B5F}
+.badge-uq{background:rgba(244,162,97,0.12);color:#8B4A00}
+.badge-nn{background:rgba(26,37,64,0.08);color:var(--text-2)}
+.badge-null{background:rgba(138,151,168,0.12);color:var(--text-3)}
+.badge-ai{background:rgba(0,180,216,0.1);color:var(--teal)}
+
+/* DIALECT TABLE */
+.dialect-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:24px}
+.dialect-table th{padding:8px 12px;text-align:left;background:var(--navy);color:#fff;font-weight:600;font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase}
+.dialect-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.dialect-table tr:nth-child(even) td{background:var(--surface)}
+.dialect-table td:first-child{font-weight:600;color:var(--text-2)}
+.ss-cell{background:#EBF3FB !important;font-family:var(--mono);font-size:0.72rem;color:#1A3C6E}
+.my-cell{background:#F0FFF4 !important;font-family:var(--mono);font-size:0.72rem;color:#1A4D2E}
+
+/* ERD LEGEND */
+.legend{display:flex;gap:16px;flex-wrap:wrap;padding:12px 16px;background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:16px;font-size:0.75rem}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-dot{width:10px;height:10px;border-radius:2px}
+
+/* RUNNING BALANCE BOX */
+.formula-box{background:var(--navy);color:#fff;border-radius:8px;padding:20px 24px;margin-bottom:16px;font-family:var(--mono);font-size:0.85rem;line-height:2}
+.formula-comment{color:rgba(255,255,255,0.4);font-size:0.75rem}
+
+/* RESPONSIVE */
+@media(max-width:1000px){
+  .tables-grid{grid-template-columns:1fr 1fr}
+  .stats-row{grid-template-columns:repeat(3,1fr)}
+  .toc-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .tables-grid,.tables-grid-2{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <svg class="logo-mark" viewBox="0 0 48 48" fill="none">
+      <path d="M24 24 C6 24 0 24 0 24 C0 24 6 4 24 4 C42 4 48 24 48 24 C48 24 42 44 24 44 C6 44 0 24 0 24Z" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+      <line x1="24" y1="5" x2="24" y2="43" stroke="#00B4D8" stroke-width="1.5"/>
+      <circle cx="24" cy="24" r="3.5" fill="#00B4D8"/>
+    </svg>
+    <div>
+      <div class="page-title">Clarity — Database Schema Reference</div>
+      <div class="page-sub">Budget Management Platform · SQL Server &amp; MariaDB · All IDs AUTO_INCREMENT / IDENTITY(1,1)</div>
+    </div>
+  </div>
+  <div class="header-badges">
+    <span class="hbadge hbadge-teal">55 tables</span>
+    <span class="hbadge hbadge-blue">SQL Server 2019+</span>
+    <span class="hbadge hbadge-blue">MariaDB 10.6+</span>
+    <span class="hbadge hbadge-green">3 views</span>
+    <span class="hbadge hbadge-teal">Multi-tenant</span>
+    <span class="hbadge hbadge-teal">Cryptographic audit chain</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-card-num">55</div><div class="stat-card-label">Tables</div></div>
+  <div class="stat-card"><div class="stat-card-num">6</div><div class="stat-card-label">Schemas (SS)</div></div>
+  <div class="stat-card"><div class="stat-card-num">3</div><div class="stat-card-label">Views</div></div>
+  <div class="stat-card"><div class="stat-card-num">80+</div><div class="stat-card-label">Indexes</div></div>
+  <div class="stat-card"><div class="stat-card-num">160+</div><div class="stat-card-label">Foreign Keys</div></div>
+  <div class="stat-card"><div class="stat-card-num">16</div><div class="stat-card-label">Domain Groups</div></div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">Contents</div>
+  <div class="toc-grid">
+    <a class="toc-link" href="#s1">1. Platform / Tenancy</a>
+    <a class="toc-link" href="#s2">2. Identity &amp; Access</a>
+    <a class="toc-link" href="#s3">3. Reference Data</a>
+    <a class="toc-link" href="#s4">4. Budget Periods</a>
+    <a class="toc-link" href="#s5">5. Budgets &amp; Lines</a>
+    <a class="toc-link" href="#s6">6. Documents</a>
+    <a class="toc-link" href="#s7">7. Agreements</a>
+    <a class="toc-link" href="#s8">8. Intake Requests</a>
+    <a class="toc-link" href="#s9">9. Approval Workflow</a>
+    <a class="toc-link" href="#s10">10. Purchase Orders</a>
+    <a class="toc-link" href="#s11">11. Actuals</a>
+    <a class="toc-link" href="#s12">12. Forecasts</a>
+    <a class="toc-link" href="#s13">13. Period Close</a>
+    <a class="toc-link" href="#s14">14. Audit Log</a>
+    <a class="toc-link" href="#s15">15. Notifications</a>
+    <a class="toc-link" href="#s16">16. AI &amp; Config</a>
+    <a class="toc-link" href="#dialect">17. Dialect Differences</a>
+    <a class="toc-link" href="#formula">18. Running Balance Formula</a>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#007A99"></div>PK — Primary Key (auto-increment)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2D8B5F"></div>FK — Foreign Key</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8B4A00"></div>UQ — Unique constraint</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1A2540"></div>NN — NOT NULL</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8A97A8"></div>NULL — nullable</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>AI — AUTO_INCREMENT / IDENTITY</div>
+  <div class="legend-item"><span style="font-family:monospace;font-size:0.75rem;background:#EBF3FB;color:#1A3C6E;padding:2px 6px;border-radius:3px">SS</span> SQL Server type</div>
+  <div class="legend-item"><span style="font-family:monospace;font-size:0.75rem;background:#F0FFF4;color:#1A4D2E;padding:2px 6px;border-radius:3px">MY</span> MariaDB type</div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 1 ═══════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div><div class="section-title">Platform &amp; Tenancy</div><div class="section-desc">Multi-tenant foundation — every other table references tenants.id</div></div>
+  </div>
+  <div class="tables-grid">
+    <div class="tbl-card">
+      <div class="tbl-card-header"><span class="tbl-card-name">tenants</span><div class="tbl-card-meta"><span class="tbl-schema schema-platform">platform</span><span class="col-count">9 cols</span></div></div>
+      <div class="tbl-cols">
+        <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+        <div class="tbl-col-row"><span class="col-name">name</span><span class="col-type">NVARCHAR(200)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">slug</span><span class="col-type">NVARCHAR(100)</span><span class="col-badge badge-uq">UQ</span></div>
+        <div class="tbl-col-row"><span class="col-name">status</span><span class="col-type">NVARCHAR(20)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">timezone</span><span class="col-type">NVARCHAR(60)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">base_currency</span><span class="col-type">NVARCHAR(3)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">fiscal_year_start_month</span><span class="col-type">TINYINT</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">created_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">updated_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+      </div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-card-header"><span class="tbl-card-name">feature_flags</span><div class="tbl-card-meta"><span class="tbl-schema schema-platform">platform</span><span class="col-count">6 cols</span></div></div>
+      <div class="tbl-cols">
+        <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">tenant_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row"><span class="col-name">flag_key</span><span class="col-type">NVARCHAR(100)</span><span class="col-badge badge-uq">UQ(t,k)</span></div>
+        <div class="tbl-col-row"><span class="col-name">is_enabled</span><span class="col-type">BIT</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">updated_by</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">updated_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+      </div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-card-header"><span class="tbl-card-name">rate_limit_config</span><div class="tbl-card-meta"><span class="tbl-schema schema-platform">platform</span><span class="col-count">7 cols</span></div></div>
+      <div class="tbl-cols">
+        <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">tenant_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row"><span class="col-name">endpoint_category</span><span class="col-type">NVARCHAR(80)</span><span class="col-badge badge-uq">UQ(t,e)</span></div>
+        <div class="tbl-col-row"><span class="col-name">per_user_per_minute</span><span class="col-type">INT</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">per_ip_per_minute</span><span class="col-type">INT</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">burst_limit</span><span class="col-type">INT</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">updated_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ SECTION 2 ═══════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div><div class="section-title">Identity &amp; Access</div><div class="section-desc">Users, roles, RBAC, sessions, password history, MFA, SCIM, delegations, security policy</div></div>
+  </div>
+  <div class="tables-grid">
+    <div class="tbl-card">
+      <div class="tbl-card-header"><span class="tbl-card-name">users</span><div class="tbl-card-meta"><span class="tbl-schema schema-auth">auth</span><span class="col-count">20 cols</span></div></div>
+      <div class="tbl-cols">
+        <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">tenant_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row"><span class="col-name">email</span><span class="col-type">NVARCHAR(320)</span><span class="col-badge badge-uq">UQ(t,e)</span></div>
+        <div class="tbl-col-row"><span class="col-name">display_name</span><span class="col-type">NVARCHAR(200)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">password_hash</span><span class="col-type">NVARCHAR(255)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">mfa_enabled</span><span class="col-type">BIT</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">mfa_secret_enc</span><span class="col-type">NVARCHAR(500)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">mfa_backup_codes</span><span class="col-type">NVARCHAR(1000)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">status</span><span class="col-type">NVARCHAR(30)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">failed_login_count</span><span class="col-type">TINYINT</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">locked_until</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">password_changed_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">require_pw_change</span><span class="col-type">BIT</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">last_login_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">last_login_ip</span><span class="col-type">NVARCHAR(45)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">sso_provider</span><span class="col-type">NVARCHAR(40)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">sso_subject</span><span class="col-type">NVARCHAR(500)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">scim_external_id</span><span class="col-type">NVARCHAR(500)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">created_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">updated_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+      </div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-card-header"><span class="tbl-card-name">roles</span><div class="tbl-card-meta"><span class="tbl-schema schema-auth">auth</span><span class="col-count">4 cols</span></div></div>
+      <div class="tbl-cols">
+        <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+        <div class="tbl-col-row"><span class="col-name">name</span><span class="col-type">NVARCHAR(80)</span><span class="col-badge badge-uq">UQ</span></div>
+        <div class="tbl-col-row"><span class="col-name">description</span><span class="col-type">NVARCHAR(500)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">is_system_role</span><span class="col-type">BIT</span><span class="col-badge badge-nn">NN</span></div>
+      </div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-card-header"><span class="tbl-card-name">user_roles</span><div class="tbl-card-meta"><span class="tbl-schema schema-auth">auth</span><span class="col-count">8 cols</span></div></div>
+      <div class="tbl-cols">
+        <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">user_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">role_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">department_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">assigned_by</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row"><span class="col-name">assigned_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">revoked_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">revoked_by</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK</span></div>
+      </div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-card-header"><span class="tbl-card-name">sessions</span><div class="tbl-card-meta"><span class="tbl-schema schema-auth">auth</span><span class="col-count">9 cols</span></div></div>
+      <div class="tbl-cols">
+        <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">user_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">tenant_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row"><span class="col-name">token_hash</span><span class="col-type">NVARCHAR(255)</span><span class="col-badge badge-uq">UQ</span></div>
+        <div class="tbl-col-row"><span class="col-name">ip_address</span><span class="col-type">NVARCHAR(45)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">user_agent</span><span class="col-type">NVARCHAR(500)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">created_at / expires_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">revoked_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-null">NULL</span></div>
+        <div class="tbl-col-row"><span class="col-name">revoke_reason</span><span class="col-type">NVARCHAR(100)</span><span class="col-badge badge-null">NULL</span></div>
+      </div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-card-header"><span class="tbl-card-name">password_history</span><div class="tbl-card-meta"><span class="tbl-schema schema-auth">auth</span><span class="col-count">4 cols</span></div></div>
+      <div class="tbl-cols">
+        <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">user_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row"><span class="col-name">password_hash</span><span class="col-type">NVARCHAR(255)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row"><span class="col-name">changed_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+      </div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-card-header"><span class="tbl-card-name">security_policy</span><div class="tbl-card-meta"><span class="tbl-schema schema-auth">auth</span></div></div>
+      <div class="tbl-cols">
+        <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">tenant_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row"><span class="col-name">setting_key</span><span class="col-type">NVARCHAR(100)</span><span class="col-badge badge-uq">UQ(t,k)</span></div>
+        <div class="tbl-col-row"><span class="col-name">setting_value</span><span class="col-type">NVARCHAR(500)</span><span class="col-badge badge-nn">NN</span></div>
+        <div class="tbl-col-row fk"><span class="col-name fk-name">updated_by</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+        <div class="tbl-col-row"><span class="col-name">updated_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTIONS 3-16 SUMMARY CARDS -->
+<div class="section" id="s3">
+  <div class="section-header"><div class="section-num">3</div><div><div class="section-title">Reference Data</div><div class="section-desc">departments, cost_centres, locations, currencies, fx_rates, cost_categories, support_maintenance_types, rejection_reasons, vendors, vendor_category_tags</div></div></div>
+  <div class="tables-grid">
+    <div class="tbl-card"><div class="tbl-card-header"><span class="tbl-card-name">vendors</span><div class="tbl-card-meta"><span class="tbl-schema schema-ref">ref</span><span class="col-count">11 cols</span></div></div><div class="tbl-cols">
+      <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">tenant_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">name</span><span class="col-type">NVARCHAR(300)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">vendor_type</span><span class="col-type">NVARCHAR(40)</span><span class="col-badge badge-nn">NN CHK</span></div>
+      <div class="tbl-col-row"><span class="col-name">status</span><span class="col-type">NVARCHAR(30)</span><span class="col-badge badge-nn">NN CHK</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">primary_currency_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">payment_terms_days</span><span class="col-type">SMALLINT</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">vat_number</span><span class="col-type">NVARCHAR(50)</span><span class="col-badge badge-null">NULL</span></div>
+    </div></div>
+    <div class="tbl-card"><div class="tbl-card-header"><span class="tbl-card-name">fx_rates</span><div class="tbl-card-meta"><span class="tbl-schema schema-ref">ref</span><span class="col-count">9 cols</span></div></div><div class="tbl-cols">
+      <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">tenant_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">from_currency_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">to_currency_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">rate</span><span class="col-type">DECIMAL(18,6)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">effective_date</span><span class="col-type">DATE</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">budget_period_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">is_snapshot</span><span class="col-type">BIT</span><span class="col-badge badge-nn">NN</span></div>
+    </div></div>
+    <div class="tbl-card"><div class="tbl-card-header"><span class="tbl-card-name">rejection_reasons</span><div class="tbl-card-meta"><span class="tbl-schema schema-ref">ref</span><span class="col-count">7 cols</span></div></div><div class="tbl-cols">
+      <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">tenant_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">code</span><span class="col-type">NVARCHAR(60)</span><span class="col-badge badge-uq">UQ(t,c)</span></div>
+      <div class="tbl-col-row"><span class="col-name">description</span><span class="col-type">NVARCHAR(500)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">category</span><span class="col-type">NVARCHAR(80)</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">is_active</span><span class="col-type">BIT</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">created_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="section" id="s5">
+  <div class="section-header"><div class="section-num">5</div><div><div class="section-title">Budgets &amp; Budget Lines</div><div class="section-desc">budgets, budget_lines, budget_line_cost_splits, budget_line_cost_changes</div></div></div>
+  <div class="tables-grid tables-grid-2">
+    <div class="tbl-card"><div class="tbl-card-header"><span class="tbl-card-name">budget_lines</span><div class="tbl-card-meta"><span class="tbl-schema schema-finance">finance</span><span class="col-count">18 cols</span></div></div><div class="tbl-cols">
+      <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">budget_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">description</span><span class="col-type">NVARCHAR(500)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">budget_type</span><span class="col-type">NVARCHAR(10)</span><span class="col-badge badge-nn">CHK</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">cost_category_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">cost_centre_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">location_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">amount</span><span class="col-type">DECIMAL(15,2)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">currency_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">vendor_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">justification</span><span class="col-type">NVARCHAR(MAX)</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">status</span><span class="col-type">NVARCHAR(30)</span><span class="col-badge badge-nn">CHK</span></div>
+      <div class="tbl-col-row"><span class="col-name">is_contract_linked</span><span class="col-type">BIT</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">source_line_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK self</span></div>
+      <div class="tbl-col-row"><span class="col-name">is_projection</span><span class="col-type">BIT</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">projection_source_agreement_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">created_by</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">created_at / updated_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+    </div></div>
+    <div class="tbl-card"><div class="tbl-card-header"><span class="tbl-card-name">budget_line_cost_changes</span><div class="tbl-card-meta"><span class="tbl-schema schema-finance">finance</span><span class="col-count">9 cols</span></div></div><div class="tbl-cols">
+      <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">budget_line_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">previous_amount</span><span class="col-type">DECIMAL(15,2)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">new_amount</span><span class="col-type">DECIMAL(15,2)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">change_amount</span><span class="col-type">DECIMAL(15,2)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">change_pct</span><span class="col-type">DECIMAL(8,4)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">justification</span><span class="col-type">NVARCHAR(MAX)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">requires_reapproval</span><span class="col-type">BIT</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">changed_by</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="section" id="s7">
+  <div class="section-header"><div class="section-num">7</div><div><div class="section-title">Agreements — Contract Lifecycle</div><div class="section-desc">agreements, agreement_expiry_alerts, agreement_alert_acknowledgements</div></div></div>
+  <div class="tables-grid">
+    <div class="tbl-card"><div class="tbl-card-header"><span class="tbl-card-name">agreements</span><div class="tbl-card-meta"><span class="tbl-schema schema-finance">finance</span><span class="col-count">19 cols</span></div></div><div class="tbl-cols">
+      <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">tenant_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">budget_line_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">agreement_name</span><span class="col-type">NVARCHAR(150)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">support_maintenance_type_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">term_type</span><span class="col-type">NVARCHAR(15)</span><span class="col-badge badge-nn">CHK</span></div>
+      <div class="tbl-col-row"><span class="col-name">term_months</span><span class="col-type">SMALLINT</span><span class="col-badge badge-nn">≥1</span></div>
+      <div class="tbl-col-row"><span class="col-name">start_date / end_date</span><span class="col-type">DATE</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">annual_cost / monthly_cost</span><span class="col-type">DECIMAL(15,2)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">cost_increase_pct</span><span class="col-type">DECIMAL(6,3)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">auto_generate_renewal</span><span class="col-type">BIT</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">vendor_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">contract_s3_key</span><span class="col-type">NVARCHAR(1000)</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">notes</span><span class="col-type">NVARCHAR(2000)</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">status</span><span class="col-type">NVARCHAR(20)</span><span class="col-badge badge-nn">CHK</span></div>
+    </div></div>
+    <div class="tbl-card"><div class="tbl-card-header"><span class="tbl-card-name">agreement_expiry_alerts</span><div class="tbl-card-meta"><span class="tbl-schema schema-finance">finance</span></div></div><div class="tbl-cols">
+      <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">agreement_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">alert_type</span><span class="col-type">NVARCHAR(20)</span><span class="col-badge badge-uq">UQ(a,t) CHK</span></div>
+      <div class="tbl-col-row"><span class="col-name">triggered_at / sent_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-null">NULL</span></div>
+    </div></div>
+    <div class="tbl-card"><div class="tbl-card-header"><span class="tbl-card-name">agreement_alert_acknowledgements</span><div class="tbl-card-meta"><span class="tbl-schema schema-finance">finance</span></div></div><div class="tbl-cols">
+      <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">INT</span><span class="col-badge badge-pk">PK AI</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">alert_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">user_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">acknowledgement_response</span><span class="col-type">NVARCHAR(50)</span><span class="col-badge badge-nn">CHK</span></div>
+      <div class="tbl-col-row"><span class="col-name">defer_to_month</span><span class="col-type">NVARCHAR(20)</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">replacement_agreement_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">notes</span><span class="col-type">NVARCHAR(1000)</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">acknowledged_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">UQ(a,u)</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="section" id="s14">
+  <div class="section-header"><div class="section-num">14</div><div><div class="section-title">Audit Log — Immutable</div><div class="section-desc">Cryptographic hash chain — entry_hash covers all fields of each row, previous_hash links to prior entry. PK is BIGINT.</div></div></div>
+  <div class="tables-grid tables-grid-1">
+    <div class="tbl-card"><div class="tbl-card-header"><span class="tbl-card-name">audit_log</span><div class="tbl-card-meta"><span class="tbl-schema schema-audit">audit</span><span class="col-count">16 cols — PK: BIGINT</span></div></div><div class="tbl-cols" style="display:grid;grid-template-columns:1fr 1fr">
+      <div class="tbl-col-row pk"><span class="col-name pk-name">id</span><span class="col-type">BIGINT</span><span class="col-badge badge-pk">PK AI</span></div>
+      <div class="tbl-col-row fk"><span class="col-name fk-name">tenant_id</span><span class="col-type">INT</span><span class="col-badge badge-fk">FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">user_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL — no FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">session_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL — no FK</span></div>
+      <div class="tbl-col-row"><span class="col-name">event_category</span><span class="col-type">NVARCHAR(40)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">event_type</span><span class="col-type">NVARCHAR(100)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">entity_type</span><span class="col-type">NVARCHAR(60)</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">entity_id</span><span class="col-type">INT</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">description</span><span class="col-type">NVARCHAR(1000)</span><span class="col-badge badge-nn">NN</span></div>
+      <div class="tbl-col-row"><span class="col-name">before_state</span><span class="col-type">NVARCHAR(MAX) / JSON</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">after_state</span><span class="col-type">NVARCHAR(MAX) / JSON</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">ip_address</span><span class="col-type">NVARCHAR(45)</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">user_agent</span><span class="col-type">NVARCHAR(500)</span><span class="col-badge badge-null">NULL</span></div>
+      <div class="tbl-col-row"><span class="col-name">entry_hash</span><span class="col-type">NVARCHAR(128)</span><span class="col-badge badge-nn">SHA-512</span></div>
+      <div class="tbl-col-row"><span class="col-name">previous_hash</span><span class="col-type">NVARCHAR(128)</span><span class="col-badge badge-null">NULL chain</span></div>
+      <div class="tbl-col-row"><span class="col-name">created_at</span><span class="col-type">DATETIME2(3)</span><span class="col-badge badge-nn">NN</span></div>
+    </div></div>
+  </div>
+  <div style="margin-top:10px;padding:10px 14px;background:#FFF5E8;border:1px solid rgba(244,162,97,0.4);border-radius:6px;font-size:0.78rem;color:#7A4000">
+    ⚠ <strong>user_id and session_id intentionally have no FK constraint</strong> — the audit log must remain intact even if users are deprovisioned or sessions are purged. Grant only INSERT + SELECT on this table to the application DB user.
+  </div>
+</div>
+
+<!-- DIALECT COMPARISON -->
+<div class="section" id="dialect">
+  <div class="section-header"><div class="section-num">17</div><div><div class="section-title">SQL Server vs MariaDB — Dialect Differences</div><div class="section-desc">Key syntax differences between the two schema files</div></div></div>
+  <table class="dialect-table">
+    <thead><tr><th>Concept</th><th class="ss-cell">SQL Server</th><th class="my-cell">MariaDB</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Auto-increment</td><td class="ss-cell">INT NOT NULL IDENTITY(1,1)</td><td class="my-cell">INT NOT NULL AUTO_INCREMENT</td><td>Both always start at 1, increment by 1</td></tr>
+      <tr><td>String type (Unicode)</td><td class="ss-cell">NVARCHAR(n) — UTF-16</td><td class="my-cell">VARCHAR(n) CHARACTER SET utf8mb4</td><td>MariaDB: set at table level (CHARSET=utf8mb4)</td></tr>
+      <tr><td>Long text</td><td class="ss-cell">NVARCHAR(MAX)</td><td class="my-cell">TEXT / LONGTEXT</td><td>MariaDB TEXT = ~65KB; LONGTEXT = ~4GB</td></tr>
+      <tr><td>Boolean</td><td class="ss-cell">BIT (0 or 1)</td><td class="my-cell">TINYINT(1)</td><td>MariaDB has no native BOOL — TINYINT(1) is standard convention</td></tr>
+      <tr><td>Timestamp with precision</td><td class="ss-cell">DATETIME2(3)</td><td class="my-cell">DATETIME or DATETIME(3)</td><td>MariaDB DATETIME(3) = millisecond precision; audit_log uses DATETIME(3)</td></tr>
+      <tr><td>Current UTC timestamp default</td><td class="ss-cell">DEFAULT GETUTCDATE()</td><td class="my-cell">DEFAULT CURRENT_TIMESTAMP</td><td>MariaDB CURRENT_TIMESTAMP uses server timezone — ensure tz=UTC in my.cnf</td></tr>
+      <tr><td>Auto-update timestamp</td><td class="ss-cell">Requires trigger or app logic</td><td class="my-cell">ON UPDATE CURRENT_TIMESTAMP</td><td>MariaDB supports this natively on DATETIME columns</td></tr>
+      <tr><td>JSON column</td><td class="ss-cell">NVARCHAR(MAX) — no native JSON type, use JSON functions</td><td class="my-cell">JSON (alias for LONGTEXT with JSON validation)</td><td>audit_log.before_state / after_state use JSON in MariaDB</td></tr>
+      <tr><td>Schema namespacing</td><td class="ss-cell">platform.tenants, auth.users, finance.budgets etc.</td><td class="my-cell">Single flat namespace (no schemas) — use one DB per tenant or prefix tables</td><td>SQL Server schemas aid logical grouping and permissions; MariaDB uses database-level isolation</td></tr>
+      <tr><td>Multi-tenant isolation</td><td class="ss-cell">Schema-per-schema logical grouping; row-level tenant_id filter</td><td class="my-cell">Database-per-tenant (recommended) or row-level tenant_id filter</td><td>Both schemas implement row-level tenant_id on every table for flexibility</td></tr>
+      <tr><td>CHECK constraints</td><td class="ss-cell">Fully enforced since SQL Server 2019</td><td class="my-cell">Parsed but not enforced before MariaDB 10.2.1; enforced 10.2.1+</td><td>Verify MariaDB version supports CHECK enforcement</td></tr>
+      <tr><td>Filtered / partial index</td><td class="ss-cell">CREATE INDEX ... WHERE is_contract_linked = 1</td><td class="my-cell">Not supported — use full index or generated column</td><td>MariaDB: CREATE INDEX ix ON budget_lines (is_contract_linked) WHERE clause not supported</td></tr>
+      <tr><td>Default DB engine</td><td class="ss-cell">N/A — SQL Server only</td><td class="my-cell">ENGINE=InnoDB required — MyISAM does not support FK</td><td>All MariaDB tables explicitly set ENGINE=InnoDB</td></tr>
+      <tr><td>Self-referencing FK (departments)</td><td class="ss-cell">Supported inline</td><td class="my-cell">Supported inline</td><td>Identical — departments.parent_dept_id → departments.id</td></div></tr>
+      <tr><td>Forward reference FK (fx_rates → budget_periods)</td><td class="ss-cell">Handle with ALTER TABLE or correct creation order</td><td class="my-cell">SET foreign_key_checks=0 at top, SET foreign_key_checks=1 at bottom; then ALTER TABLE fx_rates ADD CONSTRAINT...</td><td>MariaDB file uses deferred FK addition for circular/forward references</td></tr>
+      <tr><td>Decimal precision for money</td><td class="ss-cell">DECIMAL(15,2)</td><td class="my-cell">DECIMAL(15,2)</td><td>Identical — 13 digits before decimal, 2 after. Sufficient for £999,999,999,999.99</td></tr>
+      <tr><td>BIGINT PK (audit_log)</td><td class="ss-cell">BIGINT NOT NULL IDENTITY(1,1)</td><td class="my-cell">BIGINT NOT NULL AUTO_INCREMENT</td><td>Audit log uses BIGINT to support billions of entries over 7-year retention</td></tr>
+      <tr><td>Named schemas in DDL</td><td class="ss-cell">CREATE TABLE auth.users (...)</td><td class="my-cell">CREATE TABLE users (...)</td><td>MariaDB tables are unschemed — all in one database; use separate databases for hard isolation</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- RUNNING BALANCE FORMULA -->
+<div class="section" id="formula">
+  <div class="section-header"><div class="section-num">18</div><div><div class="section-title">Running Balance Formula</div><div class="section-desc">How Clarity computes remaining budget in vw_budget_line_running_balance</div></div></div>
+  <div class="formula-box">
+    <span class="formula-comment">-- Running balance per budget line</span><br>
+    Remaining = total_budget<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;− SUM(purchase_orders.total_value WHERE status != 'closed')  <span class="formula-comment">← Committed</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;− SUM(actuals.amount WHERE is_deleted = 0)                 <span class="formula-comment">← Confirmed actuals</span><br><br>
+    <span class="formula-comment">-- When goods receipt converts committed → actuals:</span><br>
+    <span class="formula-comment">-- PO encumbrance reduces (or PO closes), actuals increases by same amount.</span><br>
+    <span class="formula-comment">-- Net effect on Remaining = zero. Only un-receipted PO value counts as committed.</span><br><br>
+    <span class="formula-comment">-- RAG thresholds (from BRD FR-064 / AR-001)</span><br>
+    Green  = pct_committed_or_spent &lt;= 95%<br>
+    Amber  = pct_committed_or_spent 95% – 105%<br>
+    Red    = pct_committed_or_spent &gt; 105%
+  </div>
+</div>
+
+</div>
+</body>
+</html>

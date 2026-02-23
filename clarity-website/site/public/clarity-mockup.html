@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Clarity — Platform Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A1628;--navy-mid:#0F2040;--navy-light:#1A3055;
+  --blue:#1F4E79;--blue-mid:#2E75B6;--blue-light:#5BA4D4;
+  --teal:#00B4D8;--teal-light:#E0F7FC;
+  --amber:#F4A261;--amber-light:#FFF3E8;
+  --red:#E05252;--red-light:#FEECEC;
+  --green:#52B788;--green-light:#EBF7F1;
+  --white:#fff;--surface:#F7F9FC;--surface2:#EEF2F7;
+  --border:#DDE3ED;--border-dark:#C8D2E0;
+  --text:#1A2540;--text-2:#4A5568;--text-3:#8A97A8;
+  --sidebar:240px;--topbar:56px;
+  --font-d:'Cormorant Garamond',Georgia,serif;
+  --font:'DM Sans',system-ui,sans-serif;
+  --rad:8px;--rad-sm:5px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 4px 12px rgba(0,0,0,0.05);
+  --shadow-lg:0 4px 24px rgba(0,0,0,0.12);
+  --trans:0.2s ease;
+}
+html{font-size:14px}
+body{font-family:var(--font);background:var(--surface);color:var(--text);display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ─────────────────────────────────────────── */
+.sidebar{width:var(--sidebar);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;z-index:50}
+.sidebar-logo{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px}
+.logo-mark{width:32px;height:32px;flex-shrink:0}
+.logo-text{font-family:var(--font-d);font-size:1.3rem;color:#fff;letter-spacing:0.04em}
+.nav-section{padding:20px 12px 8px;font-size:0.65rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:1px 0;border-radius:var(--rad-sm);color:rgba(255,255,255,0.55);cursor:pointer;transition:all var(--trans);font-size:0.875rem;font-weight:400;position:relative}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:#fff}
+.nav-item.active{background:rgba(0,180,216,0.15);color:var(--teal)}
+.nav-item .nav-icon{width:16px;text-align:center;font-size:0.9rem;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--teal);color:var(--navy);font-size:0.65rem;font-weight:700;padding:2px 6px;border-radius:100px;min-width:18px;text-align:center}
+.nav-badge.amber{background:var(--amber);color:#fff}
+.sidebar-footer{margin-top:auto;padding:12px;border-top:1px solid rgba(255,255,255,0.07)}
+.user-pill{display:flex;align-items:center;gap:8px;padding:8px;border-radius:var(--rad-sm);cursor:pointer}
+.user-pill:hover{background:rgba(255,255,255,0.05)}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--blue-mid),var(--teal));display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:#fff;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:0.8rem;color:#fff;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:0.65rem;color:rgba(255,255,255,0.4)}
+
+/* ── MAIN ────────────────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:var(--topbar);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;z-index:40}
+.topbar-title{font-family:var(--font-d);font-size:1.4rem;font-weight:600;color:var(--text);flex:1}
+.topbar-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{width:34px;height:34px;border-radius:var(--rad-sm);border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--text-2);transition:all var(--trans);position:relative}
+.icon-btn:hover{background:var(--surface);border-color:var(--border-dark)}
+.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid #fff}
+.breadcrumb{font-size:0.75rem;color:var(--text-3);display:flex;align-items:center;gap:6px}
+.breadcrumb span{cursor:pointer;color:var(--blue-mid)}
+.breadcrumb span:hover{text-decoration:underline}
+.content{flex:1;overflow-y:auto;padding:24px}
+
+/* ── CARDS & LAYOUT ──────────────────────────────────── */
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--rad);padding:20px;box-shadow:var(--shadow)}
+.card-title{font-size:0.8rem;font-weight:600;color:var(--text-2);letter-spacing:0.04em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.flex{display:flex;align-items:center}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.gap-8{gap:8px}
+.gap-12{gap:12px}
+.gap-16{gap:16px}
+.mb-16{margin-bottom:16px}
+.mb-12{margin-bottom:12px}
+.mb-8{margin-bottom:8px}
+.mt-16{margin-top:16px}
+.col{display:flex;flex-direction:column;gap:8px}
+
+/* ── KPI CARD ────────────────────────────────────────── */
+.kpi-card{background:#fff;border:1px solid var(--border);border-radius:var(--rad);padding:16px 20px;box-shadow:var(--shadow)}
+.kpi-label{font-size:0.7rem;font-weight:600;color:var(--text-3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px}
+.kpi-value{font-family:var(--font-d);font-size:1.8rem;font-weight:600;line-height:1;color:var(--text)}
+.kpi-sub{font-size:0.72rem;color:var(--text-3);margin-top:4px;display:flex;align-items:center;gap:4px}
+.kpi-trend{font-size:0.7rem;font-weight:600;padding:2px 6px;border-radius:3px}
+.kpi-trend.up{background:var(--green-light);color:var(--green)}
+.kpi-trend.down{background:var(--red-light);color:var(--red)}
+.kpi-trend.warn{background:var(--amber-light);color:#C47000}
+.kpi-bar-wrap{height:4px;background:var(--surface2);border-radius:2px;margin-top:10px;overflow:hidden}
+.kpi-bar-fill{height:100%;border-radius:2px}
+
+/* ── BADGES & PILLS ──────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:100px;font-size:0.7rem;font-weight:600;letter-spacing:0.02em}
+.badge-green{background:var(--green-light);color:#2D8B5F}
+.badge-amber{background:var(--amber-light);color:#C47000}
+.badge-red{background:var(--red-light);color:#C03030}
+.badge-blue{background:#EBF3FB;color:var(--blue)}
+.badge-teal{background:var(--teal-light);color:#007A99}
+.badge-grey{background:var(--surface2);color:var(--text-2)}
+.badge-navy{background:rgba(31,78,121,0.12);color:var(--blue)}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot-green{background:var(--green)}
+.dot-amber{background:var(--amber)}
+.dot-red{background:var(--red)}
+.dot-blue{background:var(--blue-mid)}
+.dot-grey{background:var(--text-3)}
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--rad-sm);font-family:var(--font);font-size:0.8rem;font-weight:500;cursor:pointer;border:none;transition:all var(--trans);white-space:nowrap}
+.btn-primary{background:var(--teal);color:var(--navy)}
+.btn-primary:hover{background:#00C8EF}
+.btn-secondary{background:var(--surface);color:var(--text-2);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--surface2);border-color:var(--border-dark)}
+.btn-danger{background:var(--red-light);color:var(--red);border:1px solid rgba(224,82,82,0.3)}
+.btn-danger:hover{background:#FCDDDD}
+.btn-ghost{background:transparent;color:var(--blue-mid);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface);border-color:var(--blue-light)}
+.btn-green{background:var(--green-light);color:#2D8B5F;border:1px solid rgba(82,183,136,0.3)}
+.btn-green:hover{background:#D4F0E4}
+.btn-amber{background:var(--amber-light);color:#C47000;border:1px solid rgba(244,162,97,0.3)}
+.btn-sm{padding:5px 10px;font-size:0.75rem}
+.btn-lg{padding:10px 20px;font-size:0.875rem}
+
+/* ── TABLE ───────────────────────────────────────────── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:0.8rem}
+thead th{padding:9px 12px;text-align:left;font-size:0.68rem;font-weight:600;color:var(--text-3);letter-spacing:0.06em;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background var(--trans)}
+tbody tr:hover{background:var(--surface)}
+tbody tr:last-child{border-bottom:none}
+td{padding:10px 12px;color:var(--text);vertical-align:middle}
+td.mono{font-family:monospace;font-size:0.8rem;color:var(--text-2)}
+.table-actions{display:flex;gap:6px;align-items:center}
+
+/* ── FORM ────────────────────────────────────────────── */
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.form-label{font-size:0.75rem;font-weight:600;color:var(--text-2)}
+.form-label .req{color:var(--red);margin-left:2px}
+.form-control{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rad-sm);font-family:var(--font);font-size:0.82rem;color:var(--text);background:#fff;outline:none;transition:border-color var(--trans)}
+.form-control:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,0.12)}
+.form-control[disabled]{background:var(--surface);color:var(--text-3);cursor:not-allowed}
+textarea.form-control{resize:vertical;min-height:80px}
+select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A97A8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer}
+.form-hint{font-size:0.7rem;color:var(--text-3)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.form-section{border:1px solid var(--border);border-radius:var(--rad);padding:16px;margin-bottom:16px}
+.form-section-title{font-size:0.75rem;font-weight:600;color:var(--text-2);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.toggle-wrap{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface);border-radius:var(--rad-sm);border:1px solid var(--border);cursor:pointer;margin-bottom:14px}
+.toggle{width:36px;height:20px;background:var(--border-dark);border-radius:100px;position:relative;transition:background var(--trans);flex-shrink:0}
+.toggle.on{background:var(--teal)}
+.toggle::after{content:'';position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform var(--trans);box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle.on::after{transform:translateX(16px)}
+.toggle-label{font-size:0.8rem;font-weight:500;color:var(--text)}
+.toggle-sub{font-size:0.7rem;color:var(--text-3)}
+.calc-display{background:var(--teal-light);border:1px solid rgba(0,180,216,0.25);border-radius:var(--rad-sm);padding:10px 14px;font-size:0.8rem;color:#007A99;display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.calc-display .calc-icon{font-size:1rem}
+.increase-row{display:flex;align-items:center;gap:8px}
+.increase-row .form-control{width:80px}
+
+/* ── PROGRESS STEPPER ────────────────────────────────── */
+.stepper{display:flex;align-items:center;gap:0;margin-bottom:24px}
+.step{display:flex;align-items:center;gap:8px;flex:1}
+.step-circle{width:28px;height:28px;border-radius:50%;border:2px solid var(--border-dark);background:#fff;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:var(--text-3);flex-shrink:0;z-index:1;position:relative}
+.step-circle.done{background:var(--green);border-color:var(--green);color:#fff}
+.step-circle.active{background:var(--teal);border-color:var(--teal);color:var(--navy)}
+.step-circle.warn{background:var(--amber);border-color:var(--amber);color:#fff}
+.step-label{font-size:0.72rem;font-weight:500;color:var(--text-3)}
+.step-label.active{color:var(--teal);font-weight:600}
+.step-label.done{color:var(--green)}
+.step-connector{flex:1;height:2px;background:var(--border);margin:0 4px;position:relative;top:-0px}
+.step-connector.done{background:var(--green)}
+
+/* ── MODAL ───────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,22,40,0.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity var(--trans)}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border-radius:10px;width:100%;max-width:560px;box-shadow:var(--shadow-lg);transform:scale(0.97);transition:transform var(--trans)}
+.modal-overlay.open .modal{transform:scale(1)}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:1rem;font-weight:600;color:var(--text)}
+.modal-close{width:28px;height:28px;border-radius:4px;border:none;background:transparent;cursor:pointer;color:var(--text-3);font-size:1.1rem;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:var(--surface);color:var(--text)}
+.modal-body{padding:20px 24px}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:8px}
+
+/* ── TABS ────────────────────────────────────────────── */
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;gap:0}
+.tab{padding:10px 18px;font-size:0.82rem;font-weight:500;color:var(--text-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all var(--trans)}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+
+/* ── SEARCH & FILTER ─────────────────────────────────── */
+.search-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.search-input-wrap{position:relative;flex:1;min-width:200px}
+.search-input{padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:var(--rad-sm);font-family:var(--font);font-size:0.82rem;color:var(--text);background:#fff;outline:none;width:100%;transition:border-color var(--trans)}
+.search-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,180,216,0.12)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:0.9rem}
+.filter-chip{padding:5px 10px;border:1px solid var(--border);border-radius:100px;font-size:0.72rem;font-weight:500;color:var(--text-2);cursor:pointer;background:#fff;white-space:nowrap;transition:all var(--trans)}
+.filter-chip:hover,.filter-chip.active{background:var(--teal-light);border-color:var(--teal);color:#007A99}
+
+/* ── PROGRESS BAR ────────────────────────────────────── */
+.prog-wrap{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width 0.6s ease}
+.prog-green{background:var(--green)}
+.prog-teal{background:var(--teal)}
+.prog-amber{background:var(--amber)}
+.prog-red{background:var(--red)}
+
+/* ── ALERT BANNERS ───────────────────────────────────── */
+.alert-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--rad-sm);font-size:0.8rem;margin-bottom:10px;border:1px solid}
+.alert-banner-amber{background:var(--amber-light);border-color:rgba(244,162,97,0.4);color:#7A4000}
+.alert-banner-red{background:var(--red-light);border-color:rgba(224,82,82,0.4);color:#8B1A1A}
+.alert-banner-green{background:var(--green-light);border-color:rgba(82,183,136,0.4);color:#1A5C38}
+.alert-banner-blue{background:#EBF3FB;border-color:rgba(46,117,182,0.3);color:var(--blue)}
+.alert-banner .ack-btn{margin-left:auto;font-size:0.72rem;font-weight:600;cursor:pointer;text-decoration:underline;white-space:nowrap;flex-shrink:0}
+
+/* ── DIFF VIEW ───────────────────────────────────────── */
+.diff-row{display:flex;gap:8px;font-size:0.78rem;font-family:monospace;margin-bottom:4px}
+.diff-old{background:#FFF0F0;color:var(--red);padding:2px 8px;border-radius:3px;flex:1}
+.diff-new{background:#F0FFF4;color:var(--green);padding:2px 8px;border-radius:3px;flex:1}
+.diff-label{font-size:0.65rem;font-weight:700;letter-spacing:0.06em;color:var(--text-3);margin-bottom:4px;font-family:var(--font)}
+
+/* ── CALENDAR ────────────────────────────────────────── */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.cal-nav{display:flex;align-items:center;gap:8px}
+.cal-month{font-family:var(--font-d);font-size:1.2rem;font-weight:600}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dow{text-align:center;font-size:0.65rem;font-weight:700;color:var(--text-3);padding:6px 0;letter-spacing:0.06em;text-transform:uppercase}
+.cal-day{min-height:80px;border:1px solid var(--border);border-radius:5px;padding:5px;background:#fff;font-size:0.72rem;cursor:pointer;transition:all var(--trans);position:relative}
+.cal-day:hover{border-color:var(--border-dark);background:var(--surface)}
+.cal-day.other-month{background:var(--surface);color:var(--text-3)}
+.cal-day.today{border-color:var(--blue-mid);border-width:2px}
+.cal-day-num{font-weight:600;color:var(--text-2);margin-bottom:3px}
+.cal-event{padding:2px 5px;border-radius:3px;font-size:0.62rem;font-weight:600;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal-event.green{background:var(--green-light);color:#2D8B5F}
+.cal-event.amber{background:var(--amber-light);color:#C47000}
+.cal-event.red{background:var(--red-light);color:var(--red)}
+
+/* ── RAG ─────────────────────────────────────────────── */
+.rag-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.rag-green{background:var(--green)}
+.rag-amber{background:var(--amber)}
+.rag-red{background:var(--red)}
+
+/* ── SCREEN SWITCHER ─────────────────────────────────── */
+.screen{display:none}
+.screen.active{display:block}
+
+/* ── PANEL SLIDE ─────────────────────────────────────── */
+.side-panel{position:fixed;top:0;right:0;width:460px;height:100%;background:#fff;border-left:1px solid var(--border);z-index:150;display:flex;flex-direction:column;transform:translateX(100%);transition:transform var(--trans);box-shadow:-4px 0 24px rgba(0,0,0,0.1)}
+.side-panel.open{transform:translateX(0)}
+.panel-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.panel-title{font-size:1rem;font-weight:600;color:var(--text)}
+.panel-body{flex:1;overflow-y:auto;padding:20px}
+.panel-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+
+/* ── MISC ────────────────────────────────────────────── */
+.divider{height:1px;background:var(--border);margin:16px 0}
+.text-muted{color:var(--text-3)}
+.text-sm{font-size:0.75rem}
+.text-xs{font-size:0.68rem}
+.font-mono{font-family:monospace}
+.font-medium{font-weight:500}
+.font-semibold{font-weight:600}
+.activity-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0}
+.ai-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:linear-gradient(135deg,rgba(0,180,216,0.1),rgba(46,117,182,0.1));border:1px solid rgba(0,180,216,0.2);border-radius:100px;font-size:0.68rem;font-weight:600;color:var(--blue-mid)}
+.section-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title-sm{font-size:0.9rem;font-weight:600;color:var(--text)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-3)}
+.empty-state-icon{font-size:2.5rem;margin-bottom:12px;opacity:0.4}
+.tooltip-hint{font-size:0.68rem;color:var(--text-3);background:var(--surface2);border-radius:3px;padding:2px 6px;display:inline-block}
+.screen-intro{font-size:0.75rem;color:var(--text-3);padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rad-sm);margin-bottom:16px;display:flex;align-items:center;gap:6px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <svg class="logo-mark" viewBox="0 0 48 48" fill="none">
+      <path d="M24 24 C6 24 0 24 0 24 C0 24 6 4 24 4 C42 4 48 24 48 24 C48 24 42 44 24 44 C6 44 0 24 0 24Z" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+      <line x1="24" y1="5" x2="24" y2="43" stroke="#00B4D8" stroke-width="1.5"/>
+      <circle cx="24" cy="24" r="3.5" fill="#00B4D8"/>
+    </svg>
+    <span class="logo-text">clarity</span>
+  </div>
+
+  <div class="nav-section">Main</div>
+  <div class="nav-item active" onclick="showScreen('dashboard')"><span class="nav-icon">⊞</span> Dashboard</div>
+  <div class="nav-item" onclick="showScreen('budgets')"><span class="nav-icon">◫</span> Budgets <span class="nav-badge">3</span></div>
+  <div class="nav-item" onclick="showScreen('approvals')"><span class="nav-icon">◈</span> Approvals <span class="nav-badge amber">7</span></div>
+  <div class="nav-item" onclick="showScreen('intake')"><span class="nav-icon">⊕</span> Budget Requests <span class="nav-badge">4</span></div>
+
+  <div class="nav-section">Finance</div>
+  <div class="nav-item" onclick="showScreen('po')"><span class="nav-icon">◉</span> Purchase Orders</div>
+  <div class="nav-item" onclick="showScreen('actuals')"><span class="nav-icon">◎</span> Actuals</div>
+  <div class="nav-item" onclick="showScreen('agreements')"><span class="nav-icon">⊙</span> Agreements</div>
+  <div class="nav-item" onclick="showScreen('reports')"><span class="nav-icon">▦</span> Reports</div>
+  <div class="nav-item" onclick="showScreen('audit')"><span class="nav-icon">◬</span> Audit Log</div>
+
+  <div class="nav-section">Admin</div>
+  <div class="nav-item" onclick="showScreen('refdata')"><span class="nav-icon">⊟</span> Reference Data</div>
+  <div class="nav-item" onclick="showScreen('users')"><span class="nav-icon">⊗</span> Users & Roles</div>
+  <div class="nav-item" onclick="showScreen('periodclose')"><span class="nav-icon">⊘</span> Period Close</div>
+  <div class="nav-item" onclick="showScreen('notifications')"><span class="nav-icon">◑</span> Notifications <span class="nav-badge amber">3</span></div>
+
+  <div class="nav-section">Home</div>
+  <div class="nav-item" onclick="window.location.href='clarity-mockip.html'"><span class="nav-icon">⊟</span> Return to Clarity</div>
+
+
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="user-avatar">SC</div>
+      <div class="user-info">
+        <div class="user-name">Sarah Chen</div>
+        <div class="user-role">Finance Controller</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+  <div class="topbar" id="topbar">
+    <div class="topbar-title" id="topbarTitle">Dashboard</div>
+    <div class="topbar-actions">
+      <div class="breadcrumb" id="breadcrumb"></div>
+      <button class="icon-btn" onclick="showScreen('notifications')" title="Notifications">🔔<span class="notif-dot"></span></button>
+      <button class="icon-btn" title="Search">🔍</button>
+      <button class="icon-btn" title="Help">?</button>
+    </div>
+  </div>
+  <div class="content" id="contentArea">
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: DASHBOARD -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen active" id="screen-dashboard">
+      <div class="screen-intro">🖥 Finance Controller view — Q1 FY2026 overview. Click any element to explore that area of the platform.</div>
+
+      <!-- KPI Row -->
+      <div class="grid-4 mb-16">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Budget</div>
+          <div class="kpi-value">£4.28M</div>
+          <div class="kpi-sub"><span class="kpi-trend up">▲ FY2026</span> Q1 approved budget</div>
+          <div class="kpi-bar-wrap"><div class="kpi-bar-fill prog-teal" style="width:100%"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Committed (POs)</div>
+          <div class="kpi-value">£1.94M</div>
+          <div class="kpi-sub"><span class="kpi-trend warn">45%</span> of total budget</div>
+          <div class="kpi-bar-wrap"><div class="kpi-bar-fill prog-amber" style="width:45%"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Confirmed Actuals</div>
+          <div class="kpi-value">£873K</div>
+          <div class="kpi-sub"><span class="kpi-trend up">20%</span> of total budget</div>
+          <div class="kpi-bar-wrap"><div class="kpi-bar-fill prog-green" style="width:20%"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Remaining</div>
+          <div class="kpi-value">£1.47M</div>
+          <div class="kpi-sub"><span class="kpi-trend down">▼ 35%</span> remaining headroom</div>
+          <div class="kpi-bar-wrap"><div class="kpi-bar-fill prog-teal" style="width:35%"></div></div>
+        </div>
+      </div>
+
+      <div class="grid-2 mb-16">
+        <!-- Dept spend -->
+        <div class="card">
+          <div class="card-title">Spend by Department <button class="btn btn-secondary btn-sm" onclick="showScreen('reports')">Full report</button></div>
+          <table><thead><tr><th>Department</th><th>Budget</th><th>Spent</th><th>%</th><th>RAG</th></tr></thead><tbody>
+            <tr><td class="font-medium">Technology</td><td>£1,280,000</td><td>£1,024,000</td><td>80%</td><td><div class="flex gap-8"><div class="rag-dot rag-amber"></div><span class="text-xs">Amber</span></div></td></tr>
+            <tr><td class="font-medium">Operations</td><td>£940,000</td><td>£516,000</td><td>55%</td><td><div class="flex gap-8"><div class="rag-dot rag-green"></div><span class="text-xs">Green</span></div></td></tr>
+            <tr><td class="font-medium">HR</td><td>£620,000</td><td>£248,000</td><td>40%</td><td><div class="flex gap-8"><div class="rag-dot rag-green"></div><span class="text-xs">Green</span></div></td></tr>
+            <tr><td class="font-medium">Finance</td><td>£480,000</td><td>£441,600</td><td>92%</td><td><div class="flex gap-8"><div class="rag-dot rag-red"></div><span class="text-xs">Red</span></div></td></tr>
+            <tr><td class="font-medium">Marketing</td><td>£360,000</td><td>£216,000</td><td>60%</td><td><div class="flex gap-8"><div class="rag-dot rag-green"></div><span class="text-xs">Green</span></div></td></tr>
+          </tbody></table>
+        </div>
+
+        <!-- Alerts & Activity -->
+        <div class="col gap-16">
+          <div class="card">
+            <div class="card-title">Alerts requiring attention</div>
+            <div class="alert-banner alert-banner-red">🔴 <strong>Finance Dept</strong> forecast at 92% of budget — review recommended. <span class="ack-btn" onclick="showScreen('reports')">View forecast →</span></div>
+            <div class="alert-banner alert-banner-amber">🟡 <strong>3 agreements</strong> expiring within 90 days — acknowledgement pending. <span class="ack-btn" onclick="showScreen('agreements')">View calendar →</span></div>
+            <div class="alert-banner alert-banner-amber">🟡 <strong>Azure EA Support</strong> 28 days to renewal — unacknowledged. <span class="ack-btn" onclick="showScreen('notifications')">Acknowledge →</span></div>
+            <div class="alert-banner alert-banner-blue">🔵 <strong>7 approvals</strong> awaiting your review in the queue. <span class="ack-btn" onclick="showScreen('approvals')">Review now →</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Quick actions</div>
+            <div class="flex gap-8" style="flex-wrap:wrap">
+              <button class="btn btn-primary btn-sm" onclick="showScreen('budgets')">+ New Budget</button>
+              <button class="btn btn-ghost btn-sm" onclick="showScreen('periodclose')">Period Close</button>
+              <button class="btn btn-ghost btn-sm" onclick="showScreen('reports')">FX Rates</button>
+              <button class="btn btn-ghost btn-sm" onclick="showScreen('refdata')">Reference Data</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Agreement expiry -->
+        <div class="card">
+          <div class="card-title">Agreement expiry — next 90 days <button class="btn btn-secondary btn-sm" onclick="showScreen('agreements')">Calendar view</button></div>
+          <table><thead><tr><th>Agreement</th><th>Vendor</th><th>End Date</th><th>Days</th><th>Status</th></tr></thead><tbody>
+            <tr><td class="font-medium">Azure EA Support</td><td>Microsoft</td><td>17 Mar 2026</td><td><span class="badge badge-red">24 days</span></td><td><span class="badge badge-amber">⚠ Unacknowledged</span></td></tr>
+            <tr><td class="font-medium">ServiceNow ITSM</td><td>ServiceNow</td><td>31 Mar 2026</td><td><span class="badge badge-amber">38 days</span></td><td><span class="badge badge-green">✓ In Progress</span></td></tr>
+            <tr><td class="font-medium">Palo Alto AV</td><td>Palo Alto</td><td>12 Apr 2026</td><td><span class="badge badge-amber">50 days</span></td><td><span class="badge badge-amber">⚠ Unacknowledged</span></td></tr>
+            <tr><td class="font-medium">Splunk SIEM</td><td>Splunk</td><td>28 May 2026</td><td><span class="badge badge-grey">95 days</span></td><td><span class="badge badge-grey">Monitoring</span></td></tr>
+          </tbody></table>
+        </div>
+
+        <!-- Period status -->
+        <div class="card">
+          <div class="card-title">Period close readiness — Q1 FY2026</div>
+          <div class="stepper">
+            <div class="step"><div class="step-circle done">✓</div><div class="col"><span class="step-label done text-xs">Pre-Close</span></div></div>
+            <div class="step-connector done"></div>
+            <div class="step"><div class="step-circle done">✓</div><div class="col"><span class="step-label done text-xs">Resolve Items</span></div></div>
+            <div class="step-connector done"></div>
+            <div class="step"><div class="step-circle active">3</div><div class="col"><span class="step-label active text-xs">Carry-Over</span></div></div>
+            <div class="step-connector"></div>
+            <div class="step"><div class="step-circle">4</div><div class="col"><span class="step-label text-xs">Reconcile</span></div></div>
+            <div class="step-connector"></div>
+            <div class="step"><div class="step-circle">5</div><div class="col"><span class="step-label text-xs">Lock</span></div></div>
+          </div>
+          <div class="alert-banner alert-banner-blue">Step 3 of 7 — Configure carry-over rules for 12 open budget lines before soft lock.</div>
+          <div class="mt-16"><button class="btn btn-primary btn-sm" onclick="showScreen('periodclose')">Continue period close →</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: BUDGETS -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-budgets">
+      <div class="screen-intro">📁 Budget list — click any row to open the budget editor, or create a new budget.</div>
+      <div class="flex-between mb-16">
+        <div class="flex gap-8">
+          <button class="filter-chip active">All budgets</button>
+          <button class="filter-chip">Draft</button>
+          <button class="filter-chip">Pending approval</button>
+          <button class="filter-chip">Approved</button>
+          <button class="filter-chip">Rejected</button>
+        </div>
+        <div class="flex gap-8">
+          <button class="btn btn-secondary btn-sm">↓ Export</button>
+          <button class="btn btn-primary btn-sm" onclick="showScreen('budgetform')">+ New Budget</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>Budget Name</th><th>Department</th><th>Period</th><th>Type</th><th>Total</th><th>Spent %</th><th>Status</th><th>Submitted by</th><th>Actions</th></tr></thead><tbody>
+            <tr onclick="showScreen('budgetform')" style="cursor:pointer">
+              <td class="font-medium">Technology Infrastructure Refresh</td><td>Technology</td><td>Q1 FY2026</td><td><span class="badge badge-blue">CapEx</span></td><td>£620,000</td>
+              <td><div class="prog-wrap" style="width:80px"><div class="kpi-bar-fill prog-amber" style="width:68%"></div></div></td>
+              <td><span class="badge badge-green">● Approved</span></td><td>J. Okafor</td>
+              <td><div class="table-actions"><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();showScreen('budgetform')">Edit</button></div></td>
+            </tr>
+            <tr onclick="showScreen('budgetform')" style="cursor:pointer">
+              <td class="font-medium">Platform Engineering OpEx</td><td>Technology</td><td>Q1 FY2026</td><td><span class="badge badge-navy">OpEx</span></td><td>£240,000</td>
+              <td><div class="prog-wrap" style="width:80px"><div class="kpi-bar-fill prog-red" style="width:88%"></div></div></td>
+              <td><span class="badge badge-amber">⏳ Pending</span></td><td>A. Pretorius</td>
+              <td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td>
+            </tr>
+            <tr onclick="showScreen('budgetform')" style="cursor:pointer">
+              <td class="font-medium">HR Systems & Learning</td><td>HR</td><td>Q1 FY2026</td><td><span class="badge badge-navy">OpEx</span></td><td>£180,000</td>
+              <td><div class="prog-wrap" style="width:80px"><div class="kpi-bar-fill prog-green" style="width:41%"></div></div></td>
+              <td><span class="badge badge-green">● Approved</span></td><td>M. Reyes</td>
+              <td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td>
+            </tr>
+            <tr onclick="showScreen('budgetform')" style="cursor:pointer">
+              <td class="font-medium">Marketing Campaign H1</td><td>Marketing</td><td>Q1 FY2026</td><td><span class="badge badge-navy">OpEx</span></td><td>£360,000</td>
+              <td><div class="prog-wrap" style="width:80px"><div class="kpi-bar-fill prog-green" style="width:60%"></div></div></td>
+              <td><span class="badge badge-red">✕ Rejected</span></td><td>P. Williams</td>
+              <td><div class="table-actions"><button class="btn btn-secondary btn-sm">View</button></div></td>
+            </tr>
+            <tr onclick="showScreen('budgetform')" style="cursor:pointer">
+              <td class="font-medium">Managed Security Services</td><td>Technology</td><td>Q1 FY2026</td><td><span class="badge badge-navy">OpEx</span></td><td>£96,000</td>
+              <td><div class="prog-wrap" style="width:80px"><div class="kpi-bar-fill prog-teal" style="width:25%"></div></div></td>
+              <td><span class="badge badge-grey">◌ Draft</span></td><td>A. Pretorius</td>
+              <td><div class="table-actions"><button class="btn btn-primary btn-sm">Submit</button><button class="btn btn-secondary btn-sm">Edit</button></div></td>
+            </tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: BUDGET FORM / LINE EDITOR -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-budgetform">
+      <div class="screen-intro">✏️ Budget line editor — scroll down to see the Support & Maintenance contract-linked toggle and recurring cost projection.</div>
+      <div class="flex-between mb-16">
+        <div><div class="breadcrumb"><span onclick="showScreen('budgets')">Budgets</span> › Platform Engineering OpEx › Edit</div></div>
+        <div class="flex gap-8">
+          <button class="btn btn-secondary">Save draft</button>
+          <button class="btn btn-primary" onclick="showModal('submitModal')">Submit for approval</button>
+        </div>
+      </div>
+
+      <div class="grid-2 gap-16">
+        <!-- Left: budget header -->
+        <div>
+          <div class="form-section">
+            <div class="form-section-title">⊞ Budget Details</div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Budget Name <span class="req">*</span></label><input class="form-control" value="Platform Engineering OpEx Q1 FY2026"/></div>
+              <div class="form-group"><label class="form-label">Budget Period <span class="req">*</span></label><select class="form-control"><option>Q1 FY2026 (Jan–Mar 2026)</option><option>Q2 FY2026</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Department <span class="req">*</span></label><select class="form-control"><option>Technology</option><option>Operations</option><option>HR</option></select></div>
+              <div class="form-group"><label class="form-label">Cost Centre <span class="req">*</span></label><select class="form-control"><option>CC-1042 — Platform Engineering</option><option>CC-1043 — DevOps</option></select></div>
+            </div>
+          </div>
+
+          <!-- Budget line items -->
+          <div class="form-section">
+            <div class="flex-between mb-12">
+              <div class="form-section-title">◫ Budget Line Items</div>
+              <button class="btn btn-secondary btn-sm" onclick="showScreen('lineform')">+ Add Line Item</button>
+            </div>
+            <table><thead><tr><th>Description</th><th>Type</th><th>Amount</th><th>Contract</th><th>Status</th></tr></thead><tbody>
+              <tr onclick="showScreen('lineform')" style="cursor:pointer">
+                <td class="font-medium">AWS Reserved Instances</td><td><span class="badge badge-navy">OpEx</span></td><td>£84,000</td><td>—</td><td><span class="badge badge-green">● Approved</span></td>
+              </tr>
+              <tr onclick="showScreen('lineform')" style="cursor:pointer">
+                <td class="font-medium" style="color:var(--blue-mid)">ServiceNow ITSM — 24 Month</td><td><span class="badge badge-navy">OpEx</span></td><td>£48,000/yr</td><td><span class="badge badge-teal">⊙ 24 mth</span></td><td><span class="badge badge-green">● Approved</span></td>
+              </tr>
+              <tr onclick="showScreen('lineform')" style="cursor:pointer">
+                <td class="font-medium">GitHub Enterprise</td><td><span class="badge badge-navy">OpEx</span></td><td>£18,000</td><td><span class="badge badge-teal">⊙ 12 mth</span></td><td><span class="badge badge-amber">⏳ Pending</span></td>
+              </tr>
+              <tr onclick="showScreen('lineform')" style="cursor:pointer">
+                <td class="font-medium">Security Scanning (Snyk)</td><td><span class="badge badge-navy">OpEx</span></td><td>£12,000</td><td>—</td><td><span class="badge badge-grey">◌ Draft</span></td>
+              </tr>
+            </tbody></table>
+            <div class="flex-between mt-16" style="background:var(--surface);padding:10px 12px;border-radius:var(--rad-sm);border:1px solid var(--border)">
+              <span class="font-semibold text-sm">Total budget</span>
+              <span class="font-semibold" style="font-family:var(--font-d);font-size:1.1rem">£240,000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Activity + summary -->
+        <div class="col">
+          <div class="card mb-16">
+            <div class="card-title">Running Balance</div>
+            <div class="col" style="gap:8px">
+              <div class="flex-between"><span class="text-sm text-muted">Total Budget</span><span class="font-semibold">£240,000</span></div>
+              <div class="flex-between"><span class="text-sm text-muted">Committed (POs)</span><span class="font-medium" style="color:var(--amber)">− £108,000</span></div>
+              <div class="flex-between"><span class="text-sm text-muted">Confirmed Actuals</span><span class="font-medium" style="color:var(--red)">− £63,000</span></div>
+              <div class="divider"></div>
+              <div class="flex-between"><span class="font-semibold">Remaining</span><span class="font-semibold" style="color:var(--green);font-family:var(--font-d);font-size:1.2rem">£69,000</span></div>
+              <div class="prog-wrap"><div class="kpi-bar-fill prog-amber" style="width:71%"></div></div>
+              <div class="text-xs text-muted">71% of budget committed or spent</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Activity</div>
+            <div class="activity-item"><div class="activity-icon" style="background:var(--green-light);color:var(--green)">✓</div><div><div class="text-sm font-medium">Approved by D. Mbeki</div><div class="text-xs text-muted">Budget Approver · 2 days ago</div></div></div>
+            <div class="activity-item"><div class="activity-icon" style="background:var(--amber-light);color:var(--amber)">!</div><div><div class="text-sm font-medium">Returned for amendment</div><div class="text-xs text-muted">Reason: Missing vendor quotes · 5 days ago</div></div></div>
+            <div class="activity-item"><div class="activity-icon" style="background:var(--teal-light);color:var(--teal)">✎</div><div><div class="text-sm font-medium">Submitted by A. Pretorius</div><div class="text-xs text-muted">Budget Owner · 7 days ago</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: BUDGET LINE FORM (with contract toggle) -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-lineform">
+      <div class="screen-intro">⊙ Budget line item editor — toggle the Support & Maintenance flag to reveal agreement fields. The end date calculates automatically.</div>
+      <div class="flex-between mb-16">
+        <div class="breadcrumb"><span onclick="showScreen('budgets')">Budgets</span> › <span onclick="showScreen('budgetform')">Platform Engineering OpEx</span> › ServiceNow ITSM</div>
+        <div class="flex gap-8"><button class="btn btn-secondary">Cancel</button><button class="btn btn-primary">Save line item</button></div>
+      </div>
+      <div class="grid-2 gap-16">
+        <div>
+          <div class="form-section">
+            <div class="form-section-title">◫ Line Item Details</div>
+            <div class="form-group"><label class="form-label">Description <span class="req">*</span></label><input class="form-control" value="ServiceNow ITSM — 24 Month Support Agreement"/></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Budget Type <span class="req">*</span></label><select class="form-control"><option>OpEx — Operating Expenditure</option><option>CapEx — Capital Expenditure</option></select></div>
+              <div class="form-group"><label class="form-label">Cost Category <span class="req">*</span></label><select class="form-control"><option>Software Maintenance</option><option>Cloud Infrastructure</option><option>Hardware Support</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Cost Centre <span class="req">*</span></label><select class="form-control"><option>CC-1042 — Platform Engineering</option></select></div>
+              <div class="form-group"><label class="form-label">Geographic Location</label><select class="form-control"><option>EMEA — United Kingdom — London HQ</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Amount <span class="req">*</span></label><input class="form-control" value="48,000"/></div>
+              <div class="form-group"><label class="form-label">Currency <span class="req">*</span></label><select class="form-control"><option>GBP — British Pound</option><option>USD</option><option>EUR</option></select></div>
+            </div>
+            <div class="form-group"><label class="form-label">Vendor</label><select class="form-control"><option>ServiceNow Inc. (Approved ●)</option><option>Microsoft</option><option>AWS</option></select></div>
+            <div class="form-group"><label class="form-label">Business Justification <span class="req">*</span></label>
+              <textarea class="form-control">ServiceNow ITSM is the core platform for all IT service delivery. The 24-month agreement provides a 12% cost saving over annual renewal and locks in the current per-seat pricing before the vendor's announced March 2026 price increase.</textarea>
+              <div class="flex gap-8 mt-16"><span class="ai-badge">✦ AI</span><span class="text-xs text-muted">AI justification assistant available — click to improve this text</span></div>
+            </div>
+          </div>
+
+          <!-- CONTRACT TOGGLE -->
+          <div class="toggle-wrap" onclick="toggleContract()">
+            <div class="toggle on" id="contractToggle"></div>
+            <div><div class="toggle-label">This is a support &amp; maintenance agreement</div><div class="toggle-sub">Reveal contract term, expiry tracking, and recurring cost projection</div></div>
+          </div>
+
+          <!-- CONTRACT FIELDS (shown when toggle on) -->
+          <div class="form-section" id="contractFields">
+            <div class="form-section-title">⊙ Agreement Details</div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Agreement Name <span class="req">*</span></label><input class="form-control" value="ServiceNow ITSM Support 2024–2026"/></div>
+              <div class="form-group"><label class="form-label">Support &amp; Maintenance Type <span class="req">*</span></label><select class="form-control"><option>Software Maintenance</option><option>Managed Service</option><option>Hardware Support</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Term Type <span class="req">*</span></label><select class="form-control" onchange="updateTermCalc()"><option>Multi-Month</option><option>Single Month</option></select></div>
+              <div class="form-group"><label class="form-label">Term Length (months) <span class="req">*</span></label><input class="form-control" type="number" value="24" min="1" oninput="updateTermCalc()" id="termLength"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Agreement Start Date <span class="req">*</span></label><input class="form-control" type="date" value="2024-04-01" oninput="updateTermCalc()" id="startDate"/></div>
+              <div class="form-group"><label class="form-label">Agreement End Date</label><input class="form-control" id="endDate" value="2026-03-31" disabled placeholder="Auto-calculated"/></div>
+            </div>
+            <div class="calc-display"><span class="calc-icon">⊙</span><span id="calcSummary">24-month agreement · Start: 1 Apr 2024 · End: 31 Mar 2026 · 38 days remaining</span></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Annual Cost (for recurring projection)</label><input class="form-control" value="48,000"/></div>
+              <div class="form-group"><label class="form-label">Monthly Cost (calculated)</label><input class="form-control" value="£4,000 / month" disabled/></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cost Increase % on Renewal</label>
+              <div class="increase-row"><input class="form-control" value="5.0" type="number" step="0.1" min="0"/><span class="text-sm text-muted">% per annum</span></div>
+              <div class="form-hint">Applied when generating recurring cost projections for future budget periods</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Auto-Generate Renewal Draft</label><select class="form-control"><option>Yes — create draft line in next period on acknowledgement</option><option>No — manual renewal only</option></select></div>
+              <div class="form-group"><label class="form-label">Contract Document</label><input class="form-control" type="file" accept=".pdf"/></div>
+            </div>
+            <div class="form-group"><label class="form-label">Notes</label><textarea class="form-control" rows="2" placeholder="Renewal contact, SLA references, notes for Finance Controller..."></textarea></div>
+            <div class="flex gap-8 mt-16">
+              <button class="btn btn-ghost btn-sm" onclick="showModal('projectionModal')">⊕ Generate recurring cost projection</button>
+              <span class="tooltip-hint">Projects this cost across future budget periods with % increase applied</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right panel: split allocation + attachments -->
+        <div class="col">
+          <div class="card mb-16">
+            <div class="card-title">Split Cost Centre Allocation</div>
+            <div class="alert-banner alert-banner-blue mb-12">Allocate this line item across multiple cost centres. Total must equal 100%.</div>
+            <table><thead><tr><th>Cost Centre</th><th>%</th><th>Amount</th><th></th></tr></thead><tbody>
+              <tr><td>CC-1042 Platform Engineering</td><td><input style="width:60px" class="form-control" value="60"/></td><td style="color:var(--text-2)">£28,800</td><td><button class="btn btn-danger btn-sm">✕</button></td></tr>
+              <tr><td>CC-1043 DevOps</td><td><input style="width:60px" class="form-control" value="40"/></td><td style="color:var(--text-2)">£19,200</td><td><button class="btn btn-danger btn-sm">✕</button></td></tr>
+            </tbody></table>
+            <div class="flex-between mt-16" style="background:var(--surface);padding:8px 10px;border-radius:var(--rad-sm)"><span class="text-sm">Total allocation</span><span class="font-semibold" style="color:var(--green)">100% ✓</span></div>
+            <button class="btn btn-ghost btn-sm mt-16">+ Add cost centre</button>
+          </div>
+          <div class="card">
+            <div class="card-title">Supporting Documents</div>
+            <div style="border:2px dashed var(--border);border-radius:var(--rad-sm);padding:20px;text-align:center;color:var(--text-3);font-size:0.8rem;cursor:pointer" onclick="alert('File upload would open here')">
+              <div style="font-size:1.5rem;margin-bottom:8px">⊕</div>Drop files here or click to upload<br><span class="text-xs">PDF, DOCX, XLSX — max 25MB</span>
+            </div>
+            <div class="mt-16 flex gap-8 align-items-center"><span style="font-size:1rem">📄</span><span class="text-sm">ServiceNow_Quote_2024.pdf</span><span class="badge badge-green">Uploaded</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: INTAKE (Budget Requestor view) -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-intake">
+      <div class="screen-intro">📥 Budget Requestor view — submit a new budget item request to your Department Head for review and inclusion in the formal budget.</div>
+      <div class="flex-between mb-16">
+        <div class="tabs" style="margin:0">
+          <div class="tab active">My Requests</div>
+          <div class="tab" onclick="showScreen('intakeform')">+ New Request</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showScreen('intakeform')">+ New Budget Request</button>
+      </div>
+
+      <div class="card mb-16">
+        <div class="card-title">My submitted requests — Q1 FY2026</div>
+        <table><thead><tr><th>Request ID</th><th>Title</th><th>Category</th><th>Amount</th><th>Submitted</th><th>Status</th><th>Dept Head Note</th></tr></thead><tbody>
+          <tr><td class="mono">BR-2026-041</td><td class="font-medium">Datadog APM — Team licence upgrade</td><td>Software Maint.</td><td>£18,000</td><td>14 Jan</td><td><span class="badge badge-green">✓ Included in budget</span></td><td class="text-xs text-muted">Approved — added to Platform Engineering OpEx</td></tr>
+          <tr><td class="mono">BR-2026-038</td><td class="font-medium">SonarQube Enterprise renewal</td><td>Software Maint.</td><td>£8,400</td><td>9 Jan</td><td><span class="badge badge-teal">⏳ Dept Head Review</span></td><td class="text-xs text-muted">Awaiting decision</td></tr>
+          <tr><td class="mono">BR-2026-031</td><td class="font-medium">New MacBook Pros × 8 (dev team)</td><td>Hardware</td><td>£22,400</td><td>3 Jan</td><td><span class="badge badge-amber">↩ Clarification needed</span></td><td class="text-xs text-muted">"Please provide 3 vendor quotes before re-submission"</td></tr>
+          <tr><td class="mono">BR-2026-019</td><td class="font-medium">Jira Service Management</td><td>Software Licence</td><td>£6,200</td><td>21 Dec</td><td><span class="badge badge-red">✕ Rejected</span></td><td class="text-xs text-muted">Reason: Duplicate — ServiceNow covers this</td></tr>
+        </tbody></table>
+      </div>
+
+      <!-- Intake form -->
+      <div class="card" id="intakeFormInline" style="display:none"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: INTAKE FORM -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-intakeform">
+      <div class="screen-intro">✏️ Budget Requestor — new budget item request form. Use the AI assistant to improve your justification before submitting.</div>
+      <div class="flex-between mb-16">
+        <div class="breadcrumb"><span onclick="showScreen('intake')">My Requests</span> › New Request</div>
+        <div class="flex gap-8">
+          <button class="btn btn-secondary" onclick="showScreen('intake')">Cancel</button>
+          <button class="btn btn-primary" onclick="showModal('submitIntakeModal')">Submit to Department Head</button>
+        </div>
+      </div>
+      <div class="grid-2 gap-16">
+        <div>
+          <div class="form-section">
+            <div class="form-section-title">⊕ Request Details</div>
+            <div class="form-group"><label class="form-label">Request Title <span class="req">*</span></label><input class="form-control" placeholder="e.g. GitHub Copilot Enterprise — 50 seats"/></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Category <span class="req">*</span></label><select class="form-control"><option value="">Select...</option><option>Software Licence</option><option>Software Maintenance</option><option>Hardware</option><option>Cloud Services</option><option>Professional Services</option><option>Training</option></select></div>
+              <div class="form-group"><label class="form-label">Budget Type <span class="req">*</span></label><select class="form-control"><option>OpEx</option><option>CapEx</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Estimated Amount <span class="req">*</span></label><input class="form-control" type="number" placeholder="0.00"/></div>
+              <div class="form-group"><label class="form-label">Currency</label><select class="form-control"><option>GBP</option><option>USD</option><option>EUR</option></select></div>
+            </div>
+            <div class="form-group"><label class="form-label">Preferred Vendor (optional)</label><select class="form-control"><option value="">Select from approved vendor list...</option><option>GitHub / Microsoft</option><option>Amazon Web Services</option><option>Google Cloud</option></select></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Required by (approximate date)</label><input class="form-control" type="date"/></div>
+              <div class="form-group"><label class="form-label">Cost Centre</label><select class="form-control"><option>CC-1042 Platform Engineering</option></select></div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">✎ Business Justification <span class="req">*</span></div>
+            <textarea class="form-control" rows="5" placeholder="Explain why this spend is needed, what problem it solves, what the impact of not purchasing it will be, and any time sensitivity..."></textarea>
+            <div class="flex gap-8 mt-16">
+              <button class="btn btn-ghost btn-sm">✦ Improve with AI</button>
+              <span class="text-xs text-muted">AI assistant will rewrite your justification — you review before applying</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card mb-16">
+            <div class="card-title">Supporting Documents</div>
+            <div style="border:2px dashed var(--border);border-radius:var(--rad-sm);padding:20px;text-align:center;color:var(--text-3);font-size:0.8rem;cursor:pointer">
+              <div style="font-size:1.5rem;margin-bottom:8px">⊕</div>Attach quotes, business cases, or reference docs<br><span class="text-xs">Optional — but strengthens your case</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">What happens next</div>
+            <div class="stepper" style="flex-direction:column;align-items:flex-start;gap:0">
+              <div style="display:flex;gap:12px;align-items:flex-start;padding:8px 0">
+                <div class="step-circle active" style="flex-shrink:0">1</div>
+                <div><div class="text-sm font-medium">Your request is submitted</div><div class="text-xs text-muted">Sent to your Department Head's intake queue</div></div>
+              </div>
+              <div style="width:2px;height:16px;background:var(--border);margin-left:13px"></div>
+              <div style="display:flex;gap:12px;align-items:flex-start;padding:8px 0">
+                <div class="step-circle" style="flex-shrink:0">2</div>
+                <div><div class="text-sm font-medium">Department Head reviews</div><div class="text-xs text-muted">They can approve, reject, or ask for clarification</div></div>
+              </div>
+              <div style="width:2px;height:16px;background:var(--border);margin-left:13px"></div>
+              <div style="display:flex;gap:12px;align-items:flex-start;padding:8px 0">
+                <div class="step-circle" style="flex-shrink:0">3</div>
+                <div><div class="text-sm font-medium">Budget Owner includes it</div><div class="text-xs text-muted">Approved requests can be added to the formal budget</div></div>
+              </div>
+              <div style="width:2px;height:16px;background:var(--border);margin-left:13px"></div>
+              <div style="display:flex;gap:12px;align-items:flex-start;padding:8px 0">
+                <div class="step-circle" style="flex-shrink:0">4</div>
+                <div><div class="text-sm font-medium">You're notified throughout</div><div class="text-xs text-muted">Status updates via in-app, email, and Teams/Slack</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: APPROVALS -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-approvals">
+      <div class="screen-intro">◈ Approval queue — Department Head intake approvals and formal budget approvals. Click a row to open the approval detail panel.</div>
+      <div class="tabs">
+        <div class="tab active">Budget Approvals (5)</div>
+        <div class="tab">Intake Requests (4)</div>
+        <div class="tab">Reallocation Requests (1)</div>
+        <div class="tab">Actuals Corrections (2)</div>
+      </div>
+      <div class="search-bar">
+        <div class="search-input-wrap"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search by budget name, department, requestor..."/></div>
+        <button class="filter-chip active">All</button>
+        <button class="filter-chip">High value (>£50K)</button>
+        <button class="filter-chip">TPI required</button>
+        <button class="filter-chip">Overdue</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>Budget / Item</th><th>Dept</th><th>Amount</th><th>Type</th><th>Submitted by</th><th>Waiting</th><th>Flags</th><th>Actions</th></tr></thead><tbody>
+            <tr onclick="openApprovalPanel()" style="cursor:pointer">
+              <td class="font-medium">Technology Infrastructure Refresh</td><td>Technology</td><td>£620,000</td><td><span class="badge badge-blue">CapEx</span></td><td>J. Okafor</td><td><span class="badge badge-red">8 days</span></td>
+              <td><span class="badge badge-amber">⚡ TPI</span></td>
+              <td><div class="table-actions"><button class="btn btn-green btn-sm" onclick="event.stopPropagation();showModal('approveModal')">Approve</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();showModal('rejectModal')">Reject</button></div></td>
+            </tr>
+            <tr onclick="openApprovalPanel()" style="cursor:pointer">
+              <td class="font-medium">HR Systems & Learning</td><td>HR</td><td>£180,000</td><td><span class="badge badge-navy">OpEx</span></td><td>M. Reyes</td><td><span class="badge badge-amber">3 days</span></td><td>—</td>
+              <td><div class="table-actions"><button class="btn btn-green btn-sm" onclick="event.stopPropagation();showModal('approveModal')">Approve</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();showModal('rejectModal')">Reject</button><button class="btn btn-secondary btn-sm">Return</button></div></td>
+            </tr>
+            <tr onclick="openApprovalPanel()" style="cursor:pointer">
+              <td class="font-medium">Security Operations Centre — Managed</td><td>Technology</td><td>£340,000</td><td><span class="badge badge-navy">OpEx</span></td><td>A. Pretorius</td><td><span class="badge badge-red">11 days ⚠</span></td><td><span class="badge badge-red">⚡ Escalated</span></td>
+              <td><div class="table-actions"><button class="btn btn-green btn-sm" onclick="event.stopPropagation();showModal('approveModal')">Approve</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();showModal('rejectModal')">Reject</button></div></td>
+            </tr>
+            <tr onclick="openApprovalPanel()" style="cursor:pointer">
+              <td class="font-medium">Marketing Campaign H1 — Revised</td><td>Marketing</td><td>£312,000</td><td><span class="badge badge-navy">OpEx</span></td><td>P. Williams</td><td><span class="badge badge-grey">1 day</span></td><td><span class="badge badge-blue">↩ Resubmission</span></td>
+              <td><div class="table-actions"><button class="btn btn-green btn-sm" onclick="event.stopPropagation();showModal('approveModal')">Approve</button><button class="btn btn-danger btn-sm" onclick="event.stopPropagation();showModal('rejectModal')">Reject</button></div></td>
+            </tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: PO MANAGEMENT -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-po">
+      <div class="screen-intro">◉ Purchase Order management — track PO lifecycle from creation through goods receipt to closure.</div>
+      <div class="flex-between mb-16">
+        <div class="flex gap-8">
+          <button class="filter-chip active">All POs</button>
+          <button class="filter-chip">Open</button>
+          <button class="filter-chip">Partially received</button>
+          <button class="filter-chip">Disputed</button>
+          <button class="filter-chip">Awaiting closure</button>
+        </div>
+        <button class="btn btn-primary btn-sm">+ Create PO</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>PO Number</th><th>Vendor</th><th>Description</th><th>PO Value</th><th>Received</th><th>Outstanding</th><th>Days Open</th><th>State</th><th>Actions</th></tr></thead><tbody>
+            <tr>
+              <td class="mono">PO-2026-0142</td><td>ServiceNow Inc.</td><td>ITSM Support Renewal</td><td>£48,000</td><td>£48,000</td><td>£0</td><td>45</td>
+              <td><span class="badge badge-amber">⏳ Awaiting close</span></td>
+              <td><div class="table-actions"><button class="btn btn-green btn-sm" onclick="showModal('closePoModal')">Close PO</button></div></td>
+            </tr>
+            <tr>
+              <td class="mono">PO-2026-0139</td><td>Dell Technologies</td><td>Server hardware — Phase 2</td><td>£186,000</td><td>£93,000</td><td>£93,000</td><td>22</td>
+              <td><span class="badge badge-blue">◑ Partial receipt</span></td>
+              <td><div class="table-actions"><button class="btn btn-primary btn-sm" onclick="showModal('goodsReceiptModal')">Record receipt</button><button class="btn btn-secondary btn-sm">View</button></div></td>
+            </tr>
+            <tr>
+              <td class="mono">PO-2026-0131</td><td>Cisco Systems</td><td>Network switch refresh</td><td>£72,000</td><td>£0</td><td>£72,000</td><td>67</td>
+              <td><span class="badge badge-grey">○ Open</span></td>
+              <td><div class="table-actions"><button class="btn btn-primary btn-sm" onclick="showModal('goodsReceiptModal')">Record receipt</button></div></td>
+            </tr>
+            <tr>
+              <td class="mono">PO-2026-0128</td><td>Palo Alto Networks</td><td>Firewall appliances × 4</td><td>£44,800</td><td>£44,800</td><td>—</td><td>34</td>
+              <td><span class="badge badge-red">⚡ Disputed</span></td>
+              <td><div class="table-actions"><button class="btn btn-amber btn-sm" onclick="showModal('disputeModal')">Resolve dispute</button></div></td>
+            </tr>
+            <tr>
+              <td class="mono">PO-2026-0119</td><td>GitHub / Microsoft</td><td>GitHub Enterprise — annual</td><td>£18,000</td><td>£18,000</td><td>£0</td><td>89 ⚠</td>
+              <td><span class="badge badge-red">⚠ Overdue close</span></td>
+              <td><div class="table-actions"><button class="btn btn-green btn-sm" onclick="showModal('closePoModal')">Close PO</button></div></td>
+            </tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: ACTUALS -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-actuals">
+      <div class="screen-intro">◎ Actual expenditure — manually enter actuals, review unmatched entries, and import from finance systems.</div>
+      <div class="flex-between mb-16">
+        <div class="tabs" style="margin:0"><div class="tab active">All Actuals</div><div class="tab">Unmatched (no PO)</div><div class="tab">Amendments</div></div>
+        <div class="flex gap-8"><button class="btn btn-ghost btn-sm">↑ Import CSV</button><button class="btn btn-primary btn-sm" onclick="showModal('actualModal')">+ Enter Actual</button></div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>Date</th><th>Description</th><th>Vendor</th><th>Budget Line</th><th>Amount</th><th>PO Ref</th><th>Entered by</th><th>Source</th></tr></thead><tbody>
+            <tr><td>15 Jan 2026</td><td>ServiceNow Q1 invoice</td><td>ServiceNow</td><td>Platform Engineering OpEx</td><td>£12,000</td><td class="mono">PO-2026-0142</td><td>S. Chen</td><td><span class="badge badge-teal">PO Receipt</span></td></tr>
+            <tr><td>12 Jan 2026</td><td>AWS Reserved — Jan</td><td>Amazon Web Services</td><td>Technology OpEx</td><td>£7,000</td><td>—</td><td>S. Chen</td><td><span class="badge badge-blue">Manual</span></td></tr>
+            <tr><td>10 Jan 2026</td><td>Dell Phase 1 delivery</td><td>Dell Technologies</td><td>Infra Refresh CapEx</td><td>£93,000</td><td class="mono">PO-2026-0139</td><td>System</td><td><span class="badge badge-teal">PO Receipt</span></td></tr>
+            <tr style="background:var(--amber-light)"><td>8 Jan 2026</td><td>Consultant fees — amended</td><td>—</td><td>Platform Engineering</td><td>£4,200</td><td>—</td><td>S. Chen</td><td><span class="badge badge-amber">Amended</span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: AGREEMENT CALENDAR -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-agreements">
+      <div class="screen-intro">⊙ Agreement Calendar — view all active support & maintenance agreements by expiry date. Amber = 30–90 days, Red = &lt;30 days.</div>
+      <div class="flex-between mb-16">
+        <div class="flex gap-8">
+          <button class="filter-chip active">All</button>
+          <button class="filter-chip">Unacknowledged</button>
+          <button class="filter-chip">Expiring 30 days</button>
+          <button class="filter-chip">Expiring 90 days</button>
+        </div>
+        <div class="flex gap-8">
+          <button class="btn btn-secondary btn-sm">Monthly</button>
+          <button class="btn btn-ghost btn-sm">Quarterly</button>
+          <button class="btn btn-ghost btn-sm">Annual</button>
+        </div>
+      </div>
+      <div class="grid-2 gap-16">
+        <div>
+          <div class="card">
+            <div class="cal-header">
+              <div class="cal-nav"><button class="btn btn-secondary btn-sm">←</button><div class="cal-month">March 2026</div><button class="btn btn-secondary btn-sm">→</button></div>
+            </div>
+            <div class="cal-grid">
+              <div class="cal-dow">Mon</div><div class="cal-dow">Tue</div><div class="cal-dow">Wed</div><div class="cal-dow">Thu</div><div class="cal-dow">Fri</div><div class="cal-dow">Sat</div><div class="cal-dow">Sun</div>
+              <div class="cal-day other-month"><div class="cal-day-num">23</div></div><div class="cal-day other-month"><div class="cal-day-num">24</div></div><div class="cal-day other-month"><div class="cal-day-num">25</div></div><div class="cal-day other-month"><div class="cal-day-num">26</div></div><div class="cal-day other-month"><div class="cal-day-num">27</div></div><div class="cal-day other-month"><div class="cal-day-num">28</div></div><div class="cal-day"><div class="cal-day-num">1</div></div>
+              <div class="cal-day"><div class="cal-day-num">2</div></div><div class="cal-day"><div class="cal-day-num">3</div></div><div class="cal-day"><div class="cal-day-num">4</div></div><div class="cal-day"><div class="cal-day-num">5</div></div><div class="cal-day"><div class="cal-day-num">6</div></div><div class="cal-day"><div class="cal-day-num">7</div></div><div class="cal-day"><div class="cal-day-num">8</div></div>
+              <div class="cal-day"><div class="cal-day-num">9</div></div><div class="cal-day"><div class="cal-day-num">10</div></div><div class="cal-day"><div class="cal-day-num">11</div></div><div class="cal-day"><div class="cal-day-num">12</div></div><div class="cal-day"><div class="cal-day-num">13</div></div><div class="cal-day"><div class="cal-day-num">14</div></div><div class="cal-day"><div class="cal-day-num">15</div></div>
+              <div class="cal-day"><div class="cal-day-num">16</div></div><div class="cal-day today"><div class="cal-day-num">17</div><div class="cal-event red" onclick="openAgreementPanel()">⚠ Azure EA</div></div><div class="cal-day"><div class="cal-day-num">18</div></div><div class="cal-day"><div class="cal-day-num">19</div></div><div class="cal-day"><div class="cal-day-num">20</div></div><div class="cal-day"><div class="cal-day-num">21</div></div><div class="cal-day"><div class="cal-day-num">22</div></div>
+              <div class="cal-day"><div class="cal-day-num">23</div></div><div class="cal-day"><div class="cal-day-num">24</div></div><div class="cal-day"><div class="cal-day-num">25</div></div><div class="cal-day"><div class="cal-day-num">26</div></div><div class="cal-day"><div class="cal-day-num">27</div></div><div class="cal-day"><div class="cal-day-num">28</div></div><div class="cal-day"><div class="cal-day-num">29</div></div>
+              <div class="cal-day"><div class="cal-day-num">30</div></div><div class="cal-day"><div class="cal-day-num">31</div><div class="cal-event amber">ServiceNow</div></div><div class="cal-day other-month"><div class="cal-day-num">1</div></div><div class="cal-day other-month"><div class="cal-day-num">2</div></div><div class="cal-day other-month"><div class="cal-day-num">3</div></div><div class="cal-day other-month"><div class="cal-day-num">4</div></div><div class="cal-day other-month"><div class="cal-day-num">5</div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">Expiring agreements — action required</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="border:1px solid rgba(224,82,82,0.3);border-radius:var(--rad-sm);padding:14px;background:var(--red-light)">
+                <div class="flex-between mb-8"><span class="font-semibold" style="color:var(--red)">Azure EA Support</span><span class="badge badge-red">24 days</span></div>
+                <div class="text-sm text-muted mb-8">Microsoft · Software Maintenance · £96,000/yr</div>
+                <div class="alert-banner alert-banner-red" style="margin:0 0 8px">Alert sent 28 Jan — not yet acknowledged by Finance Controller</div>
+                <div class="flex gap-8"><button class="btn btn-primary btn-sm" onclick="showModal('acknowledgeModal')">Acknowledge now</button><button class="btn btn-ghost btn-sm" onclick="showScreen('budgetform')">View budget line</button></div>
+              </div>
+              <div style="border:1px solid rgba(244,162,97,0.3);border-radius:var(--rad-sm);padding:14px;background:var(--amber-light)">
+                <div class="flex-between mb-8"><span class="font-semibold" style="color:#8B4A00">ServiceNow ITSM</span><span class="badge badge-amber">38 days</span></div>
+                <div class="text-sm text-muted mb-8">ServiceNow · Software Maintenance · £48,000/yr · 24-month term</div>
+                <div class="badge badge-green mb-8">✓ Renewal in Progress — acknowledged by S. Chen</div>
+                <div class="flex gap-8"><button class="btn btn-ghost btn-sm" onclick="showModal('projectionModal')">Generate renewal projection</button></div>
+              </div>
+              <div style="border:1px solid rgba(244,162,97,0.3);border-radius:var(--rad-sm);padding:14px;background:var(--amber-light)">
+                <div class="flex-between mb-8"><span class="font-semibold" style="color:#8B4A00">Palo Alto Networks AV</span><span class="badge badge-amber">50 days</span></div>
+                <div class="text-sm text-muted mb-8">Palo Alto Networks · Security Maintenance · £28,000/yr</div>
+                <div class="alert-banner alert-banner-amber" style="margin:0 0 8px">Alert sent 17 Jan — 2 of 3 recipients acknowledged</div>
+                <div class="flex gap-8"><button class="btn btn-primary btn-sm" onclick="showModal('acknowledgeModal')">Acknowledge now</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: AUDIT LOG -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-audit">
+      <div class="screen-intro">◬ Audit Log Viewer — immutable, cryptographically hashed record of every action. Click any row to see the before/after diff.</div>
+      <div class="search-bar">
+        <div class="search-input-wrap"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search descriptions, users, entity names, IDs..."/></div>
+        <select class="form-control" style="width:auto"><option>All categories</option><option>Financial</option><option>Security</option><option>Approval</option><option>Admin</option><option>AI</option></select>
+        <select class="form-control" style="width:auto"><option>All users</option><option>S. Chen (FC)</option><option>A. Pretorius (BO)</option></select>
+        <input class="form-control" type="date" style="width:auto"/>
+        <button class="btn btn-secondary btn-sm">↓ Export</button>
+        <button class="btn btn-secondary btn-sm">Saved filters ▾</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>Timestamp</th><th>Category</th><th>Event</th><th>User</th><th>Entity</th><th>Integrity</th><th></th></tr></thead><tbody>
+            <tr onclick="showModal('auditDetailModal')" style="cursor:pointer"><td class="mono text-xs">2026-02-21 09:14:32</td><td><span class="badge badge-amber">Approval</span></td><td>Budget approved</td><td>D. Mbeki</td><td class="text-xs">Budget / BUD-2026-014</td><td><span class="badge badge-green">✓ Valid</span></td><td>▸</td></tr>
+            <tr onclick="showModal('auditDetailModal')" style="cursor:pointer"><td class="mono text-xs">2026-02-21 08:52:17</td><td><span class="badge badge-red">Security</span></td><td>Failed login × 3 — account locked</td><td>p.williams@co</td><td class="text-xs">Auth / session</td><td><span class="badge badge-green">✓ Valid</span></td><td>▸</td></tr>
+            <tr onclick="showModal('auditDetailModal')" style="cursor:pointer"><td class="mono text-xs">2026-02-21 08:41:05</td><td><span class="badge badge-blue">Financial</span></td><td>Budget line value amended (+£8,400)</td><td>A. Pretorius</td><td class="text-xs">Line / BUD-014-L03</td><td><span class="badge badge-green">✓ Valid</span></td><td>▸</td></tr>
+            <tr onclick="showModal('auditDetailModal')" style="cursor:pointer"><td class="mono text-xs">2026-02-21 08:38:12</td><td><span class="badge badge-teal">AI</span></td><td>AI justification generated — user accepted</td><td>A. Pretorius</td><td class="text-xs">Line / BUD-014-L03</td><td><span class="badge badge-green">✓ Valid</span></td><td>▸</td></tr>
+            <tr onclick="showModal('auditDetailModal')" style="cursor:pointer"><td class="mono text-xs">2026-02-20 17:29:44</td><td><span class="badge badge-navy">Admin</span></td><td>Exchange rate updated — USD/GBP</td><td>S. Chen</td><td class="text-xs">FX / USD-GBP</td><td><span class="badge badge-green">✓ Valid</span></td><td>▸</td></tr>
+            <tr onclick="showModal('auditDetailModal')" style="cursor:pointer"><td class="mono text-xs">2026-02-20 16:01:18</td><td><span class="badge badge-amber">Approval</span></td><td>Budget returned for amendment</td><td>S. Chen</td><td class="text-xs">Budget / BUD-2026-011</td><td><span class="badge badge-green">✓ Valid</span></td><td>▸</td></tr>
+            <tr onclick="showModal('auditDetailModal')" style="cursor:pointer"><td class="mono text-xs">2026-02-20 14:55:03</td><td><span class="badge badge-blue">Financial</span></td><td>PO goods receipt recorded — partial</td><td>J. Okafor</td><td class="text-xs">PO / PO-2026-0139</td><td><span class="badge badge-green">✓ Valid</span></td><td>▸</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: REPORTS -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-reports">
+      <div class="screen-intro">▦ Reports — budget utilisation forecasting, cross-period trends, commitment ageing, and recurring cost projections.</div>
+      <div class="grid-2 mb-16">
+        <div class="card" style="cursor:pointer" onclick="showModal('forecastModal')">
+          <div class="flex gap-12 mb-12"><div style="font-size:1.5rem">📈</div><div><div class="font-semibold">Budget Utilisation Forecast</div><div class="text-xs text-muted">Project end-of-period spend with RAG indicators</div></div></div>
+          <div class="flex gap-8"><span class="badge badge-green">3 Green</span><span class="badge badge-amber">1 Amber</span><span class="badge badge-red">1 Red</span></div>
+        </div>
+        <div class="card" style="cursor:pointer">
+          <div class="flex gap-12 mb-12"><div style="font-size:1.5rem">📊</div><div><div class="font-semibold">Cross-Period Trend Analysis</div><div class="text-xs text-muted">Compare up to 5 fiscal years · FX normalised</div></div></div>
+          <div class="flex gap-8"><span class="badge badge-blue">FY2022–FY2026</span><span class="badge badge-grey">7 departments</span></div>
+        </div>
+        <div class="card" style="cursor:pointer">
+          <div class="flex gap-12 mb-12"><div style="font-size:1.5rem">⏳</div><div><div class="font-semibold">Commitment Ageing Report</div><div class="text-xs text-muted">Open PO encumbrances by age band</div></div></div>
+          <div class="flex gap-8"><span class="badge badge-red">2 × 90+ days</span><span class="badge badge-amber">3 × 30–90 days</span></div>
+        </div>
+        <div class="card" style="cursor:pointer">
+          <div class="flex gap-12 mb-12"><div style="font-size:1.5rem">🔄</div><div><div class="font-semibold">Recurring Cost Projection</div><div class="text-xs text-muted">24-month forward recurring OpEx commitment</div></div></div>
+          <div class="flex gap-8"><span class="badge badge-teal">£284K/year recurring</span></div>
+        </div>
+        <div class="card" style="cursor:pointer">
+          <div class="flex gap-12 mb-12"><div style="font-size:1.5rem">🔍</div><div><div class="font-semibold">Rejection Analysis</div><div class="text-xs text-muted">Rejection reasons and resubmission success rates</div></div></div>
+          <div class="flex gap-8"><span class="badge badge-grey">42 rejections YTD</span><span class="badge badge-green">68% resubmit success</span></div>
+        </div>
+        <div class="card" style="cursor:pointer">
+          <div class="flex gap-12 mb-12"><div style="font-size:1.5rem">📉</div><div><div class="font-semibold">Cost Variance Report</div><div class="text-xs text-muted">Approved items amended after approval</div></div></div>
+          <div class="flex gap-8"><span class="badge badge-amber">8 items amended</span><span class="badge badge-navy">+£34K total variance</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: REFERENCE DATA -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-refdata">
+      <div class="screen-intro">⊟ Reference Data Management — manage vendors, departments, cost centres, cost categories, locations, and all lookup data.</div>
+      <div class="tabs">
+        <div class="tab active">Vendors</div>
+        <div class="tab">Departments</div>
+        <div class="tab">Cost Centres</div>
+        <div class="tab">Cost Categories</div>
+        <div class="tab">Locations</div>
+        <div class="tab">Currencies & FX</div>
+        <div class="tab">Budget Periods</div>
+        <div class="tab">Reason Library</div>
+      </div>
+      <div class="flex-between mb-16">
+        <div class="search-input-wrap" style="max-width:300px"><span class="search-icon">🔍</span><input class="search-input" placeholder="Search vendors..."/></div>
+        <div class="flex gap-8">
+          <button class="btn btn-ghost btn-sm">↑ Import CSV</button>
+          <button class="btn btn-primary btn-sm" onclick="showModal('newVendorModal')">+ Add Vendor</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>Vendor Name</th><th>Type</th><th>Status</th><th>Category Tags</th><th>Currency</th><th>Payment Terms</th><th>Open POs</th><th>Total Spend</th><th>Actions</th></tr></thead><tbody>
+            <tr><td class="font-medium">Microsoft Corporation</td><td>Licensor</td><td><span class="badge badge-teal">★ Preferred</span></td><td><span class="badge badge-grey text-xs">Cloud</span><span class="badge badge-grey text-xs">Software</span></td><td>GBP</td><td>30 days</td><td>2</td><td>£284,000</td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td></tr>
+            <tr><td class="font-medium">ServiceNow Inc.</td><td>Licensor</td><td><span class="badge badge-green">● Approved</span></td><td><span class="badge badge-grey text-xs">Software</span><span class="badge badge-grey text-xs">ITSM</span></td><td>GBP</td><td>45 days</td><td>1</td><td>£48,000</td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td></tr>
+            <tr><td class="font-medium">Dell Technologies</td><td>Supplier</td><td><span class="badge badge-green">● Approved</span></td><td><span class="badge badge-grey text-xs">Hardware</span></td><td>GBP</td><td>30 days</td><td>1</td><td>£186,000</td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td></tr>
+            <tr><td class="font-medium">Palo Alto Networks</td><td>Licensor</td><td><span class="badge badge-amber">⚠ Under Review</span></td><td><span class="badge badge-grey text-xs">Security</span></td><td>USD</td><td>45 days</td><td>1</td><td>£72,800</td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td></tr>
+            <tr><td class="font-medium">Datadog Inc.</td><td>Licensor</td><td><span class="badge badge-green">● Approved</span></td><td><span class="badge badge-grey text-xs">Observability</span></td><td>USD</td><td>30 days</td><td>0</td><td>£18,000</td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td></tr>
+            <tr><td class="font-medium" style="color:var(--red)">XYZ Consulting Ltd</td><td>Consultant</td><td><span class="badge badge-red">⊘ Suspended</span></td><td><span class="badge badge-grey text-xs">Consulting</span></td><td>GBP</td><td>60 days</td><td>0</td><td>£12,000</td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: USERS & ROLES -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-users">
+      <div class="screen-intro">⊗ User Management — manage roles, SCIM provisioning status, active sessions, and security settings.</div>
+      <div class="flex-between mb-16">
+        <div class="tabs" style="margin:0"><div class="tab active">All Users (24)</div><div class="tab">Active Sessions</div><div class="tab">SCIM Sync</div></div>
+        <div class="flex gap-8"><button class="btn btn-ghost btn-sm">SCIM Status ●</button><button class="btn btn-primary btn-sm">+ Invite User</button></div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Status</th><th>MFA</th><th>Last Login</th><th>Sessions</th><th>Actions</th></tr></thead><tbody>
+            <tr><td class="font-medium">Sarah Chen</td><td class="text-xs">s.chen@co.com</td><td><span class="badge badge-navy">Finance Controller</span></td><td>Finance</td><td><span class="badge badge-green">● Active</span></td><td><span class="badge badge-green">✓</span></td><td>Today 09:02</td><td>2</td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td></tr>
+            <tr><td class="font-medium">Albie Pretorius</td><td class="text-xs">a.pretorius@co.com</td><td><span class="badge badge-blue">Budget Owner</span></td><td>Technology</td><td><span class="badge badge-green">● Active</span></td><td><span class="badge badge-green">✓</span></td><td>Today 08:47</td><td>1</td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td></tr>
+            <tr><td class="font-medium">David Mbeki</td><td class="text-xs">d.mbeki@co.com</td><td><span class="badge badge-amber">Budget Approver</span></td><td>Technology</td><td><span class="badge badge-green">● Active</span></td><td><span class="badge badge-green">✓</span></td><td>Today 09:14</td><td>1</td><td><div class="table-actions"><button class="btn btn-secondary btn-sm">Edit</button></div></td></tr>
+            <tr><td class="font-medium">James Okafor</td><td class="text-xs">j.okafor@co.com</td><td><span class="badge badge-teal">Dept Head</span></td><td>Technology</td><td><span class="badge badge-green">● Active</span></td><td><span class="badge badge-amber">Setup pending</span></td><td>Yesterday</td><td>0</td><td><div class="table-actions"><button class="btn btn-amber btn-sm">Enforce MFA</button><button class="btn btn-secondary btn-sm">Edit</button></div></td></tr>
+            <tr><td class="font-medium">Priya Williams</td><td class="text-xs">p.williams@co.com</td><td><span class="badge badge-grey">Budget Requestor</span></td><td>Marketing</td><td><span class="badge badge-red">⊘ Locked (3 attempts)</span></td><td><span class="badge badge-green">✓</span></td><td>Today 08:52</td><td>0</td><td><div class="table-actions"><button class="btn btn-green btn-sm">Unlock</button><button class="btn btn-danger btn-sm">Terminate</button></div></td></tr>
+            <tr><td class="font-medium" style="color:var(--text-3)">Miguel Santos</td><td class="text-xs text-muted">m.santos@co.com</td><td><span class="badge badge-grey">Budget Owner</span></td><td>Operations</td><td><span class="badge badge-grey">◌ Deprovisioned</span></td><td>—</td><td>3 weeks ago</td><td>0</td><td><div class="table-actions"><span class="text-xs text-muted">SCIM deprovisioned</span></div></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: PERIOD CLOSE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-periodclose">
+      <div class="screen-intro">⊘ Period Close Wizard — step-by-step close-down for Q1 FY2026. Currently on Step 3 (carry-over configuration).</div>
+      <div class="card mb-16">
+        <div class="card-title">Q1 FY2026 Close-Down — Period Close Readiness: 68% complete</div>
+        <div class="stepper">
+          <div class="step"><div class="step-circle done">✓</div><div class="col"><span class="step-label done text-xs">1. Pre-Close Review</span></div></div>
+          <div class="step-connector done"></div>
+          <div class="step"><div class="step-circle done">✓</div><div class="col"><span class="step-label done text-xs">2. Resolve Items</span></div></div>
+          <div class="step-connector done"></div>
+          <div class="step"><div class="step-circle active">3</div><div class="col"><span class="step-label active text-xs">3. Carry-Over</span></div></div>
+          <div class="step-connector"></div>
+          <div class="step"><div class="step-circle">4</div><div class="col"><span class="step-label text-xs">4. Reconcile</span></div></div>
+          <div class="step-connector"></div>
+          <div class="step"><div class="step-circle">5</div><div class="col"><span class="step-label text-xs">5. Soft Lock</span></div></div>
+          <div class="step-connector"></div>
+          <div class="step"><div class="step-circle">6</div><div class="col"><span class="step-label text-xs">6. Hard Lock</span></div></div>
+          <div class="step-connector"></div>
+          <div class="step"><div class="step-circle">7</div><div class="col"><span class="step-label text-xs">7. Archive</span></div></div>
+        </div>
+        <div class="prog-wrap mt-16"><div class="kpi-bar-fill prog-teal" style="width:68%"></div></div>
+      </div>
+
+      <div class="grid-2 gap-16">
+        <div>
+          <div class="card">
+            <div class="card-title">Step 3 — Year-End Carry-Over Configuration</div>
+            <div class="alert-banner alert-banner-blue mb-16">Configure carry-over rules for each open budget line before initiating Soft Lock. Defaults to "Carry Full Remaining Budget".</div>
+            <table><thead><tr><th>Budget Line</th><th>Remaining</th><th>Carry-Over Rule</th></tr></thead><tbody>
+              <tr><td class="text-sm">AWS Reserved Instances</td><td>£4,200</td><td><select class="form-control" style="padding:4px 8px;font-size:0.75rem"><option>Carry Full Remaining</option><option>Committed Only</option><option>Specified Amount</option><option>Do Not Carry</option></select></td></tr>
+              <tr><td class="text-sm">Server Infrastructure Refresh</td><td>£38,000</td><td><select class="form-control" style="padding:4px 8px;font-size:0.75rem"><option>Carry Full Remaining</option><option selected>Committed Only</option><option>Specified Amount</option><option>Do Not Carry</option></select></td></tr>
+              <tr><td class="text-sm">Marketing Campaign H1</td><td>£48,000</td><td><select class="form-control" style="padding:4px 8px;font-size:0.75rem"><option>Carry Full Remaining</option><option>Committed Only</option><option>Specified Amount</option><option selected>Do Not Carry</option></select></td></tr>
+              <tr><td class="text-sm">Security Operations</td><td>£12,800</td><td><select class="form-control" style="padding:4px 8px;font-size:0.75rem"><option selected>Carry Full Remaining</option><option>Committed Only</option><option>Specified Amount</option><option>Do Not Carry</option></select></td></tr>
+            </tbody></table>
+            <div class="flex-between mt-16"><div><span class="text-sm text-muted">Total to carry forward:</span><span class="font-semibold ml-8" style="font-family:var(--font-d);font-size:1.2rem">£55,000</span></div><button class="btn btn-primary" onclick="showModal('confirmStepModal')">Confirm carry-over → Step 4</button></div>
+          </div>
+        </div>
+        <div>
+          <div class="card mb-16">
+            <div class="card-title">Pre-Close Readiness Summary</div>
+            <div class="col gap-8">
+              <div class="flex-between"><span class="text-sm">Open POs resolved</span><span class="badge badge-green">✓ 12 / 12</span></div>
+              <div class="flex-between"><span class="text-sm">Pending approvals</span><span class="badge badge-green">✓ 0 outstanding</span></div>
+              <div class="flex-between"><span class="text-sm">Unmatched actuals</span><span class="badge badge-amber">⚠ 2 unmatched</span></div>
+              <div class="flex-between"><span class="text-sm">Draft budget lines</span><span class="badge badge-green">✓ 0 remaining</span></div>
+              <div class="flex-between"><span class="text-sm">Carry-over rules set</span><span class="badge badge-amber">⏳ In progress</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Period summary (preview)</div>
+            <div class="col gap-8">
+              <div class="flex-between"><span class="text-sm text-muted">Total budget allocated</span><span class="font-semibold">£4,280,000</span></div>
+              <div class="flex-between"><span class="text-sm text-muted">Total actuals confirmed</span><span class="font-semibold">£3,220,000</span></div>
+              <div class="flex-between"><span class="text-sm text-muted">Remaining to release</span><span class="font-semibold" style="color:var(--green)">£1,060,000</span></div>
+              <div class="flex-between"><span class="text-sm text-muted">Carry-forward to Q2</span><span class="font-semibold" style="color:var(--blue-mid)">£55,000</span></div>
+              <div class="flex-between"><span class="text-sm text-muted">POs carried forward</span><span class="font-semibold">3 open POs</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCREEN: NOTIFICATIONS -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-notifications">
+      <div class="screen-intro">◑ Notification Centre — active alerts require acknowledgement before they are archived. Security and expiry alerts persist until explicitly acknowledged.</div>
+      <div class="tabs">
+        <div class="tab active">Active (3 unacknowledged)</div>
+        <div class="tab">All notifications</div>
+        <div class="tab">Reviewed / Acknowledged</div>
+        <div class="tab">Preferences</div>
+      </div>
+      <div class="col" style="gap:10px">
+        <!-- Expiry alert - unacknowledged -->
+        <div style="border:2px solid rgba(224,82,82,0.4);border-radius:var(--rad);background:var(--red-light);padding:16px 20px">
+          <div class="flex-between mb-8">
+            <div class="flex gap-8"><span style="font-size:1.1rem">🔔</span><span class="font-semibold" style="color:var(--red)">Agreement Expiry Alert — Acknowledgement Required</span></div>
+            <div class="flex gap-8"><span class="badge badge-red">24 days remaining</span><span class="badge badge-red">⚠ Unacknowledged</span></div>
+          </div>
+          <div class="text-sm mb-12"><strong>Azure EA Support Agreement</strong> (Microsoft) expires on <strong>17 March 2026</strong>. This alert was sent 28 January 2026. Annual value: <strong>£96,000</strong>.<br>This notification will persist until acknowledged. A 30-day escalation alert will be sent if unacknowledged by 21 February 2026.</div>
+          <div class="flex gap-8"><button class="btn btn-primary btn-sm" onclick="showModal('acknowledgeModal')">Acknowledge this alert</button><button class="btn btn-ghost btn-sm" onclick="showScreen('agreements')">View on calendar</button><button class="btn btn-ghost btn-sm" onclick="showScreen('budgetform')">View budget line</button></div>
+        </div>
+
+        <!-- Approval awaiting -->
+        <div style="border:1px solid rgba(244,162,97,0.4);border-radius:var(--rad);background:var(--amber-light);padding:16px 20px">
+          <div class="flex-between mb-8">
+            <div class="flex gap-8"><span style="font-size:1.1rem">◈</span><span class="font-semibold" style="color:#7A4000">7 Budget Approvals Awaiting Your Review</span></div>
+            <span class="badge badge-amber">Oldest: 11 days</span>
+          </div>
+          <div class="text-sm mb-12">3 items are overdue for action and have escalated to your line manager. Technology Infrastructure Refresh has a Two-Person Integrity requirement.</div>
+          <div class="flex gap-8"><button class="btn btn-primary btn-sm" onclick="showScreen('approvals')">Go to approval queue</button></div>
+        </div>
+
+        <!-- Agreement expiry 2 -->
+        <div style="border:2px solid rgba(244,162,97,0.4);border-radius:var(--rad);background:var(--amber-light);padding:16px 20px">
+          <div class="flex-between mb-8">
+            <div class="flex gap-8"><span style="font-size:1.1rem">🔔</span><span class="font-semibold" style="color:#7A4000">Agreement Expiry Alert — Acknowledgement Required</span></div>
+            <div class="flex gap-8"><span class="badge badge-amber">50 days remaining</span><span class="badge badge-amber">⚠ Unacknowledged</span></div>
+          </div>
+          <div class="text-sm mb-12"><strong>Palo Alto Networks AV Agreement</strong> expires on <strong>12 April 2026</strong>. Annual value: <strong>£28,000</strong>. 2 of 3 recipients have acknowledged. Your acknowledgement is still required.</div>
+          <div class="flex gap-8"><button class="btn btn-primary btn-sm" onclick="showModal('acknowledgeModal')">Acknowledge this alert</button></div>
+        </div>
+
+        <!-- Standard notification -->
+        <div style="border:1px solid var(--border);border-radius:var(--rad);background:#fff;padding:16px 20px">
+          <div class="flex-between mb-4">
+            <div class="flex gap-8"><span style="font-size:1.1rem">✓</span><span class="font-semibold">Budget Approved — HR Systems & Learning</span></div>
+            <span class="text-xs text-muted">2 hours ago</span>
+          </div>
+          <div class="text-sm text-muted">D. Mbeki approved HR Systems & Learning budget (£180,000) at 09:14 today.</div>
+        </div>
+        <div style="border:1px solid var(--border);border-radius:var(--rad);background:#fff;padding:16px 20px">
+          <div class="flex-between mb-4">
+            <div class="flex gap-8"><span style="font-size:1.1rem">⚡</span><span class="font-semibold">SCIM Sync Completed — 1 user deprovisioned</span></div>
+            <span class="text-xs text-muted">3 hours ago</span>
+          </div>
+          <div class="text-sm text-muted">Miguel Santos (Operations) was deprovisioned via Entra ID SCIM sync. All sessions terminated. 0 open approvals transferred.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- SIDE PANEL: Approval Detail -->
+<div class="side-panel" id="approvalPanel">
+  <div class="panel-header">
+    <div class="panel-title">Approval — Technology Infrastructure Refresh</div>
+    <button class="modal-close" onclick="closeApprovalPanel()">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="flex-between mb-16"><span class="badge badge-blue">CapEx</span><span class="badge badge-red">⚠ 8 days waiting</span><span class="badge badge-amber">⚡ TPI Required</span></div>
+    <div class="alert-banner alert-banner-amber">Two-Person Integrity required — this item requires confirmation from two independent Finance Controllers before proceeding.</div>
+    <div class="divider"></div>
+    <div class="col mb-16">
+      <div class="flex-between"><span class="text-sm text-muted">Submitted by</span><span class="text-sm font-medium">J. Okafor (Budget Owner)</span></div>
+      <div class="flex-between"><span class="text-sm text-muted">Department</span><span class="text-sm">Technology</span></div>
+      <div class="flex-between"><span class="text-sm text-muted">Amount</span><span class="font-semibold" style="font-family:var(--font-d);font-size:1.2rem">£620,000</span></div>
+      <div class="flex-between"><span class="text-sm text-muted">Period</span><span class="text-sm">Q1 FY2026</span></div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Business Justification</div>
+      <div class="text-sm" style="color:var(--text-2);line-height:1.7">The on-premise server infrastructure supporting core application workloads has reached end-of-life. Vendor support expires June 2026. This CapEx budget covers replacement hardware for three data centre locations, ensuring continuity of service for 2,400 end users.</div>
+      <div class="flex gap-8 mt-16"><span class="ai-badge">✦ AI</span><span class="text-xs text-muted">Justification was enhanced using AI assistant</span></div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Previous rejection (resubmission)</div>
+      <div class="diff-label">Rejection reason — Insufficient Justification</div>
+      <div class="text-xs" style="background:var(--red-light);padding:8px;border-radius:4px;color:var(--red)">"Original submission lacked detail on the scope of hardware replacement and did not address the three data centre locations separately. Please provide a site-by-site breakdown." — D. Mbeki, 14 Jan 2026</div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Your approval decision</div>
+      <div class="form-group"><label class="form-label">Decision <span class="req">*</span></label>
+        <div class="flex gap-8"><button class="btn btn-green">✓ Approve (TPI 1 of 2)</button><button class="btn btn-danger">✕ Reject</button><button class="btn btn-secondary">↩ Return</button></div>
+      </div>
+      <div class="form-group mt-16"><label class="form-label">Comment (mandatory for TPI)</label><textarea class="form-control" rows="3" placeholder="Required for TPI approval — state your confirmation..."></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDE PANEL: Agreement Detail -->
+<div class="side-panel" id="agreementPanel">
+  <div class="panel-header">
+    <div class="panel-title">Azure EA Support Agreement</div>
+    <button class="modal-close" onclick="closeAgreementPanel()">✕</button>
+  </div>
+  <div class="panel-body">
+    <div class="flex-between mb-12"><span class="badge badge-red">⚠ 24 days remaining</span><span class="badge badge-grey">Software Maintenance</span></div>
+    <div class="col mb-16">
+      <div class="flex-between"><span class="text-sm text-muted">Vendor</span><span class="text-sm font-medium">Microsoft Corporation</span></div>
+      <div class="flex-between"><span class="text-sm text-muted">Term</span><span class="text-sm">36 months</span></div>
+      <div class="flex-between"><span class="text-sm text-muted">Start Date</span><span class="text-sm">17 March 2023</span></div>
+      <div class="flex-between"><span class="text-sm text-muted">End Date</span><span class="text-sm font-semibold" style="color:var(--red)">17 March 2026</span></div>
+      <div class="flex-between"><span class="text-sm text-muted">Annual Cost</span><span class="font-semibold" style="font-family:var(--font-d)">£96,000</span></div>
+      <div class="flex-between"><span class="text-sm text-muted">Monthly Cost</span><span class="text-sm">£8,000</span></div>
+      <div class="flex-between"><span class="text-sm text-muted">Cost Increase %</span><span class="text-sm">8% on renewal</span></div>
+      <div class="flex-between"><span class="text-sm text-muted">Projected renewal</span><span class="text-sm" style="color:var(--amber)">£103,680 / year (+8%)</span></div>
+    </div>
+    <div class="form-section">
+      <div class="form-section-title">Acknowledgement status</div>
+      <div class="col gap-8">
+        <div class="flex-between"><span class="text-sm">S. Chen (Finance Controller)</span><span class="badge badge-red">⚠ Not acknowledged</span></div>
+        <div class="flex-between"><span class="text-sm">A. Pretorius (Budget Owner)</span><span class="badge badge-red">⚠ Not acknowledged</span></div>
+        <div class="flex-between"><span class="text-sm">J. Okafor (Dept Head)</span><span class="badge badge-red">⚠ Not acknowledged</span></div>
+      </div>
+    </div>
+    <div class="flex gap-8 mt-16">
+      <button class="btn btn-primary" onclick="showModal('acknowledgeModal');closeAgreementPanel()">Acknowledge</button>
+      <button class="btn btn-ghost" onclick="showModal('projectionModal');closeAgreementPanel()">Generate Renewal Projection</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- MODALS -->
+<!-- ══════════════════════════════════════════════════ -->
+
+<!-- Acknowledge Modal -->
+<div class="modal-overlay" id="acknowledgeModal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header"><div class="modal-title">🔔 Acknowledge Expiry Alert — Azure EA Support</div><button class="modal-close" onclick="closeModal('acknowledgeModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert-banner alert-banner-red mb-16">This alert will remain in your notification centre until you complete this acknowledgement.</div>
+      <div class="form-group"><label class="form-label">Acknowledgement Response <span class="req">*</span></label>
+        <select class="form-control" id="ackResponse" onchange="showAckDetail()">
+          <option value="">Select your response...</option>
+          <option value="progress">Renewal in Progress — procurement underway</option>
+          <option value="approved">Renewal Approved — Awaiting PO</option>
+          <option value="lapse">Not Renewing — Agreement Will Lapse</option>
+          <option value="transfer">Transferred to New Agreement</option>
+          <option value="defer">Deferred — Review in specific month</option>
+        </select>
+      </div>
+      <div class="form-group" id="ackDetail" style="display:none">
+        <label class="form-label">Additional Notes</label>
+        <textarea class="form-control" rows="3" placeholder="Optional notes for the Finance Controller record..."></textarea>
+      </div>
+      <div class="alert-banner alert-banner-blue" id="autoRenewalNote" style="display:none">Auto-Generate Renewal is enabled for this agreement. A draft renewal budget line will be created in Q2 FY2026 at the projected cost of £103,680 for your review.</div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('acknowledgeModal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('acknowledgeModal')">Confirm Acknowledgement</button></div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header"><div class="modal-title">✕ Reject Budget Approval</div><button class="modal-close" onclick="closeModal('rejectModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert-banner alert-banner-red mb-16">A rejection reason is mandatory. The submitter will see both the reason code and your comment.</div>
+      <div class="form-group"><label class="form-label">Rejection Reason <span class="req">*</span></label>
+        <select class="form-control"><option value="">Select reason code...</option><option>Insufficient Justification</option><option>Budget Exceeded</option><option>Incorrect Classification (CapEx/OpEx)</option><option>Missing Documentation</option><option>Deferred to Next Period</option><option>Commercially Uncompetitive</option><option>Policy Non-Compliant</option><option>Other</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Detailed Comment <span class="req">*</span></label><textarea class="form-control" rows="4" placeholder="Minimum 20 characters — explain specifically what the submitter needs to address for resubmission..."></textarea><div class="form-hint">This comment will be displayed in the submitter's rejection notification and in the item's activity thread.</div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('rejectModal')">Cancel</button><button class="btn btn-danger" onclick="closeModal('rejectModal')">Confirm Rejection</button></div>
+  </div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal-overlay" id="approveModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header"><div class="modal-title">✓ Confirm Approval</div><button class="modal-close" onclick="closeModal('approveModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert-banner alert-banner-blue mb-16">Budget: <strong>HR Systems & Learning</strong> · £180,000 · HR Department</div>
+      <div class="form-group"><label class="form-label">Approval Comment (optional)</label><textarea class="form-control" rows="3" placeholder="Optional comment visible to the Budget Owner..."></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('approveModal')">Cancel</button><button class="btn btn-green" onclick="closeModal('approveModal')">✓ Approve Budget</button></div>
+  </div>
+</div>
+
+<!-- Goods Receipt Modal -->
+<div class="modal-overlay" id="goodsReceiptModal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header"><div class="modal-title">◉ Record Goods Receipt — PO-2026-0139</div><button class="modal-close" onclick="closeModal('goodsReceiptModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="text-sm text-muted mb-16">Dell Technologies · Server hardware Phase 2 · PO total: £186,000</div>
+      <table><thead><tr><th>Line</th><th>Ordered</th><th>Prev. Rcvd</th><th>Receive Now</th><th>Condition</th></tr></thead><tbody>
+        <tr><td class="text-sm">Rack Server R750 × 4</td><td>4</td><td>2</td><td><input class="form-control" value="2" style="width:60px"/></td><td><select class="form-control" style="padding:4px;font-size:0.75rem"><option>Accepted</option><option>Disputed</option></select></td></tr>
+        <tr><td class="text-sm">Storage Array PS6610E</td><td>2</td><td>0</td><td><input class="form-control" value="0" style="width:60px"/></td><td><select class="form-control" style="padding:4px;font-size:0.75rem"><option>Accepted</option><option>Disputed</option></select></td></tr>
+      </tbody></table>
+      <div class="form-group mt-16"><label class="form-label">Delivery Reference</label><input class="form-control" placeholder="Delivery note or reference number"/></div>
+      <div class="alert-banner alert-banner-green mt-16">Receipting 2 × R750 will convert £93,000 from Committed to Actuals on the running balance immediately.</div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('goodsReceiptModal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('goodsReceiptModal')">Save Receipt</button></div>
+  </div>
+</div>
+
+<!-- Audit Detail Modal -->
+<div class="modal-overlay" id="auditDetailModal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header"><div class="modal-title">◬ Audit Entry — Budget line value amended</div><button class="modal-close" onclick="closeModal('auditDetailModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-section">
+        <div class="form-section-title">Event Details</div>
+        <div class="col gap-8">
+          <div class="flex-between"><span class="text-sm text-muted">Timestamp</span><span class="mono text-sm">2026-02-21 08:41:05 UTC</span></div>
+          <div class="flex-between"><span class="text-sm text-muted">User</span><span class="text-sm">A. Pretorius (Budget Owner)</span></div>
+          <div class="flex-between"><span class="text-sm text-muted">IP Address</span><span class="mono text-sm">10.0.22.xxx</span></div>
+          <div class="flex-between"><span class="text-sm text-muted">Session ID</span><span class="mono text-xs">sess_01TUm...x7f</span></div>
+          <div class="flex-between"><span class="text-sm text-muted">Entity</span><span class="mono text-sm">BudgetLine / BUD-014-L03</span></div>
+          <div class="flex-between"><span class="text-sm text-muted">Integrity</span><span class="badge badge-green">✓ Hash verified</span></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Field Changes (before → after)</div>
+        <div class="diff-label">amount</div>
+        <div class="diff-row"><div class="diff-old">− £48,000.00</div><div class="diff-new">+ £56,400.00</div></div>
+        <div class="diff-label mt-16">Change Justification (mandatory)</div>
+        <div style="background:var(--surface);padding:10px;border-radius:4px;font-size:0.8rem;color:var(--text-2);">"Vendor revised quote received 21 Feb — 17.5% increase due to additional node licences required for the DR environment that were omitted from the original scope. Updated quote attached."</div>
+        <div class="diff-label mt-16">Supporting Document</div>
+        <div class="flex gap-8 align-items-center"><span>📄</span><span class="text-sm">ServiceNow_Revised_Quote_Feb2026.pdf</span></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('auditDetailModal')">Close</button></div>
+  </div>
+</div>
+
+<!-- Projection Modal -->
+<div class="modal-overlay" id="projectionModal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header"><div class="modal-title">⊕ Recurring Cost Projection — ServiceNow ITSM</div><button class="modal-close" onclick="closeModal('projectionModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row mb-16">
+        <div class="form-group"><label class="form-label">Projection Horizon</label><select class="form-control"><option>12 months</option><option selected>24 months</option></select></div>
+        <div class="form-group"><label class="form-label">Cost Increase % per year</label><input class="form-control" value="5.0" type="number"/></div>
+      </div>
+      <div class="card-title mb-12">Projection Summary</div>
+      <table><thead><tr><th>Period</th><th>Annual Cost</th><th>Monthly</th><th>Increase</th><th>Target Period</th></tr></thead><tbody>
+        <tr><td>Year 1 (current)</td><td>£48,000</td><td>£4,000</td><td>—</td><td>Q1–Q4 FY2026</td></tr>
+        <tr style="background:var(--teal-light)"><td class="font-medium">Year 2 (projected)</td><td class="font-medium">£50,400</td><td>£4,200</td><td><span class="badge badge-amber">+5%</span></td><td><select class="form-control" style="padding:4px;font-size:0.75rem"><option>Q1–Q4 FY2027</option></select></td></tr>
+      </tbody></table>
+      <div class="alert-banner alert-banner-blue mt-16">2 draft budget line items will be created in the selected target periods, clearly labelled as system-generated projections. You can edit them before submitting those budgets.</div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('projectionModal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('projectionModal')">Generate Projection</button></div>
+  </div>
+</div>
+
+<!-- Submit Modal -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header"><div class="modal-title">Submit for Approval</div><button class="modal-close" onclick="closeModal('submitModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert-banner alert-banner-blue mb-16">Budget: <strong>Platform Engineering OpEx Q1 FY2026</strong> · £240,000 will be submitted to the approval workflow.</div>
+      <div class="col gap-8 mb-16">
+        <div class="flex-between"><span class="text-sm text-muted">Approval workflow</span><span class="text-sm">Level 1: D. Mbeki → Level 2: S. Chen</span></div>
+        <div class="flex-between"><span class="text-sm text-muted">TPI required</span><span class="text-sm">No (below £500K threshold)</span></div>
+        <div class="flex-between"><span class="text-sm text-muted">Estimated SLA</span><span class="text-sm">3 business days</span></div>
+      </div>
+      <div class="form-group"><label class="form-label">Submission Note (optional)</label><textarea class="form-control" rows="2" placeholder="Any context for the approver..."></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('submitModal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('submitModal')">Submit Budget</button></div>
+  </div>
+</div>
+
+<!-- Cost Change Justification Modal -->
+<div class="modal-overlay" id="costChangeModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header"><div class="modal-title">⚠ Cost Change Justification Required</div><button class="modal-close" onclick="closeModal('costChangeModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-section">
+        <div class="form-section-title">Value Change Summary</div>
+        <div class="col gap-8">
+          <div class="flex-between"><span class="text-sm text-muted">Field changed</span><span class="mono text-sm">amount</span></div>
+          <div class="diff-row"><div class="diff-old">− £48,000</div><div class="diff-new">+ £56,400</div></div>
+          <div class="flex-between"><span class="text-sm text-muted">Change</span><span class="font-semibold" style="color:var(--red)">+£8,400 (+17.5%)</span></div>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Justification for cost change <span class="req">*</span></label><textarea class="form-control" rows="4" placeholder="Minimum 30 characters — explain specifically why the cost has changed..."></textarea><div class="form-hint">0 / 30 minimum characters</div></div>
+      <div class="alert-banner alert-banner-amber">This change exceeds the re-approval threshold (10% or £5,000). After saving, a re-approval request will be sent to the approval workflow.</div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('costChangeModal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('costChangeModal')">Save with Justification</button></div>
+  </div>
+</div>
+
+<!-- Confirm Step Modal -->
+<div class="modal-overlay" id="confirmStepModal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header"><div class="modal-title">Confirm Carry-Over Configuration</div><button class="modal-close" onclick="closeModal('confirmStepModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="col gap-8">
+        <div class="flex-between"><span class="text-sm">Carry full remaining</span><span class="text-sm font-medium">1 line — £4,200</span></div>
+        <div class="flex-between"><span class="text-sm">Committed only</span><span class="text-sm font-medium">1 line — £38,000</span></div>
+        <div class="flex-between"><span class="text-sm">Do not carry</span><span class="text-sm font-medium">1 line — £48,000 released</span></div>
+        <div class="flex-between"><span class="text-sm">Carry full remaining</span><span class="text-sm font-medium">1 line — £12,800</span></div>
+        <div class="divider"></div>
+        <div class="flex-between"><span class="font-semibold">Total carry-forward to Q2 FY2026</span><span class="font-semibold" style="color:var(--blue-mid)">£55,000</span></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('confirmStepModal')">Review again</button><button class="btn btn-primary" onclick="closeModal('confirmStepModal')">Confirm → Step 4</button></div>
+  </div>
+</div>
+
+<!-- Actual Entry Modal -->
+<div class="modal-overlay" id="actualModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header"><div class="modal-title">◎ Enter Actual Expenditure</div><button class="modal-close" onclick="closeModal('actualModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Budget Line <span class="req">*</span></label><select class="form-control"><option>Platform Engineering OpEx — AWS Reserved</option><option>Technology OpEx — Misc</option></select></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Amount <span class="req">*</span></label><input class="form-control" type="number" placeholder="0.00"/></div>
+        <div class="form-group"><label class="form-label">Transaction Date <span class="req">*</span></label><input class="form-control" type="date"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">PO Reference (optional — links to existing PO)</label><input class="form-control" placeholder="e.g. PO-2026-0142"/></div>
+      <div class="form-group"><label class="form-label">Invoice Reference</label><input class="form-control" placeholder="INV-2026-..."/></div>
+      <div class="form-group"><label class="form-label">Description <span class="req">*</span></label><input class="form-control" placeholder="Brief description of this expenditure"/></div>
+      <div class="alert-banner alert-banner-blue">If this actual relates to an existing open PO, use the Goods Receipt function on the PO instead to avoid double-counting.</div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('actualModal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('actualModal')">Save Actual</button></div>
+  </div>
+</div>
+
+<!-- New Vendor Modal -->
+<div class="modal-overlay" id="newVendorModal">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-header"><div class="modal-title">+ Add Vendor</div><button class="modal-close" onclick="closeModal('newVendorModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="form-group"><label class="form-label">Vendor Name <span class="req">*</span></label><input class="form-control" placeholder="Legal trading name"/></div><div class="form-group"><label class="form-label">Vendor Type <span class="req">*</span></label><select class="form-control"><option>Supplier</option><option>Licensor</option><option>Contractor</option><option>Consultant</option><option>Managed Service</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Status</label><select class="form-control"><option>Approved</option><option>Under Review</option><option>Preferred</option></select></div><div class="form-group"><label class="form-label">Payment Terms (days)</label><input class="form-control" type="number" value="30"/></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Primary Currency</label><select class="form-control"><option>GBP</option><option>USD</option><option>EUR</option></select></div><div class="form-group"><label class="form-label">VAT/Tax Number</label><input class="form-control" placeholder="GB..."/></div></div>
+      <div class="form-group"><label class="form-label">Category Tags</label><input class="form-control" placeholder="e.g. Cloud, Software, Security (comma-separated)"/></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('newVendorModal')">Cancel</button><button class="btn btn-primary" onclick="closeModal('newVendorModal')">Add Vendor</button></div>
+  </div>
+</div>
+
+<!-- Submit Intake Modal -->
+<div class="modal-overlay" id="submitIntakeModal">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header"><div class="modal-title">Submit Budget Request</div><button class="modal-close" onclick="closeModal('submitIntakeModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert-banner alert-banner-blue mb-16">Your request will be sent to <strong>J. Okafor (Department Head)</strong> for review. You'll be notified of their decision.</div>
+      <div class="col gap-8">
+        <div class="flex-between"><span class="text-sm text-muted">Request title</span><span class="text-sm font-medium">GitHub Copilot Enterprise — 50 seats</span></div>
+        <div class="flex-between"><span class="text-sm text-muted">Amount</span><span class="text-sm">£32,000 / GBP</span></div>
+        <div class="flex-between"><span class="text-sm text-muted">Category</span><span class="text-sm">Software Licence</span></div>
+        <div class="flex-between"><span class="text-sm text-muted">Vendor</span><span class="text-sm">GitHub / Microsoft</span></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('submitIntakeModal')">Review again</button><button class="btn btn-primary" onclick="closeModal('submitIntakeModal');showScreen('intake')">Submit Request</button></div>
+  </div>
+</div>
+
+<!-- Forecast Modal -->
+<div class="modal-overlay" id="forecastModal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header"><div class="modal-title">📈 Budget Utilisation Forecast — Q1 FY2026</div><button class="modal-close" onclick="closeModal('forecastModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="flex gap-8 mb-16">
+        <span class="text-sm text-muted">Projection model:</span>
+        <button class="filter-chip active">Linear run-rate</button>
+        <button class="filter-chip">Committed + actuals</button>
+        <button class="filter-chip">Manual forecast</button>
+      </div>
+      <table><thead><tr><th>Department</th><th>Budget</th><th>Actuals</th><th>Committed</th><th>Forecast EOP</th><th>Variance</th><th>RAG</th></tr></thead><tbody>
+        <tr><td>Technology</td><td>£1,280K</td><td>£512K</td><td>£512K</td><td>£1,216K</td><td>-£64K (-5%)</td><td><span class="badge badge-green">● Green</span></td></tr>
+        <tr><td>Operations</td><td>£940K</td><td>£282K</td><td>£234K</td><td>£893K</td><td>-£47K (-5%)</td><td><span class="badge badge-green">● Green</span></td></tr>
+        <tr><td>HR</td><td>£620K</td><td>£124K</td><td>£124K</td><td>£496K</td><td>-£124K (-20%)</td><td><span class="badge badge-green">● Green</span></td></tr>
+        <tr style="background:var(--red-light)"><td class="font-medium">Finance</td><td>£480K</td><td>£210K</td><td>£230K</td><td>£504K</td><td>+£24K (+5%)</td><td><span class="badge badge-red">● Red ⚠</span></td></tr>
+        <tr style="background:var(--amber-light)"><td class="font-medium">Marketing</td><td>£360K</td><td>£108K</td><td>£180K</td><td>£360K</td><td>±£0 (0%)</td><td><span class="badge badge-amber">● Amber</span></td></tr>
+      </tbody></table>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary">↓ Export PDF</button><button class="btn btn-secondary" onclick="closeModal('forecastModal')">Close</button></div>
+  </div>
+</div>
+
+<!-- Close PO Modal -->
+<div class="modal-overlay" id="closePoModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header"><div class="modal-title">Close Purchase Order</div><button class="modal-close" onclick="closeModal('closePoModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="alert-banner alert-banner-green mb-16">All lines on PO-2026-0142 (ServiceNow) are fully received. Closing this PO will release any residual encumbrance back to the budget remaining.</div>
+      <div class="col gap-8">
+        <div class="flex-between"><span class="text-sm text-muted">PO total</span><span>£48,000</span></div>
+        <div class="flex-between"><span class="text-sm text-muted">Total received</span><span>£48,000</span></div>
+        <div class="flex-between"><span class="text-sm text-muted">Residual to release</span><span class="font-semibold" style="color:var(--green)">£0</span></div>
+      </div>
+      <div class="form-group mt-16"><label class="form-label">Closure Note (optional)</label><textarea class="form-control" rows="2" placeholder="Any notes for the Finance Controller..."></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('closePoModal')">Cancel</button><button class="btn btn-green" onclick="closeModal('closePoModal')">Close PO</button></div>
+  </div>
+</div>
+
+<script>
+// Screen navigation
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const screen = document.getElementById('screen-' + id);
+  if(screen) screen.classList.add('active');
+
+  // Update nav active state
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navMap = {
+    dashboard:'Dashboard',budgets:'Budgets',budgetform:'Budgets',lineform:'Budgets',
+    approvals:'Approvals',intake:'Budget Requests',intakeform:'Budget Requests',
+    po:'Purchase Orders',actuals:'Actuals',agreements:'Agreements',
+    reports:'Reports',audit:'Audit Log',refdata:'Reference Data',
+    users:'Users & Roles',periodclose:'Period Close',notifications:'Notifications'
+  };
+  const label = navMap[id];
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if(n.textContent.trim().startsWith(label)) n.classList.add('active');
+  });
+
+  // Update topbar title
+  const titles = {
+    dashboard:'Dashboard',budgets:'Budgets',budgetform:'Platform Engineering OpEx',
+    lineform:'ServiceNow ITSM — Budget Line',approvals:'Approval Queue',
+    intake:'My Budget Requests',intakeform:'New Budget Request',
+    po:'Purchase Orders',actuals:'Actual Expenditure',
+    agreements:'Agreement Calendar',reports:'Reports',audit:'Audit Log',
+    refdata:'Reference Data',users:'Users & Roles',
+    periodclose:'Period Close — Q1 FY2026',notifications:'Notifications'
+  };
+  document.getElementById('topbarTitle').textContent = titles[id] || 'Clarity';
+
+  // Close panels
+  closeApprovalPanel();
+  closeAgreementPanel();
+
+  // Scroll to top
+  document.querySelector('.content').scrollTop = 0;
+}
+
+// Modal management
+function showModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if(e.target === this) this.classList.remove('open');
+  });
+});
+
+// Side panels
+function openApprovalPanel() {
+  document.getElementById('approvalPanel').classList.add('open');
+}
+function closeApprovalPanel() {
+  document.getElementById('approvalPanel').classList.remove('open');
+}
+function openAgreementPanel() {
+  document.getElementById('agreementPanel').classList.add('open');
+}
+function closeAgreementPanel() {
+  document.getElementById('agreementPanel').classList.remove('open');
+}
+
+// Contract toggle
+function toggleContract() {
+  const t = document.getElementById('contractToggle');
+  const fields = document.getElementById('contractFields');
+  t.classList.toggle('on');
+  fields.style.display = t.classList.contains('on') ? 'block' : 'none';
+}
+
+// Term date calculation
+function updateTermCalc() {
+  const months = parseInt(document.getElementById('termLength')?.value) || 0;
+  const start = document.getElementById('startDate')?.value;
+  const endEl = document.getElementById('endDate');
+  const summaryEl = document.getElementById('calcSummary');
+  if(!start || !months || !endEl) return;
+  const startDate = new Date(start);
+  const endDate = new Date(startDate);
+  endDate.setMonth(endDate.getMonth() + months);
+  endDate.setDate(endDate.getDate() - 1);
+  endEl.value = endDate.toISOString().split('T')[0];
+  const today = new Date();
+  const daysLeft = Math.max(0, Math.round((endDate - today) / 86400000));
+  if(summaryEl) summaryEl.textContent = `${months}-month agreement · Start: ${startDate.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · End: ${endDate.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} · ${daysLeft} days remaining`;
+}
+
+// Acknowledge modal detail
+function showAckDetail() {
+  const val = document.getElementById('ackResponse')?.value;
+  const detail = document.getElementById('ackDetail');
+  const autoNote = document.getElementById('autoRenewalNote');
+  if(detail) detail.style.display = val ? 'block' : 'none';
+  if(autoNote) autoNote.style.display = (val === 'progress' || val === 'approved') ? 'flex' : 'none';
+}
+
+// Keyboard: Escape closes modals and panels
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+    closeApprovalPanel();
+    closeAgreementPanel();
+  }
+});
+</script>
+</body>
+</html>

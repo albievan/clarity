@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: clarity-sqlserver-external
+  namespace: clarity-db
+  labels:
+    app.kubernetes.io/name: clarity-sqlserver
+    app.kubernetes.io/part-of: clarity
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: clarity-sqlserver
+  ports:
+    - name: mssql
+      port: 1433
+      targetPort: 1433
+      nodePort: 31433   # Fixed host port

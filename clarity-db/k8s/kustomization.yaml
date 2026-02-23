@@ -1,0 +1,28 @@
+# =============================================================================
+#  Clarity DB — Kustomize root
+#  Deploy everything:  kubectl apply -k k8s/
+#  Deploy MariaDB only: kubectl apply -k k8s/mariadb/
+#  Deploy SQL Server only: kubectl apply -k k8s/sqlserver/
+# =============================================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: clarity-db
+
+resources:
+  - 00-namespace.yaml
+  - mariadb/01-secret.yaml
+  - mariadb/02-configmap.yaml
+  - mariadb/03-pvc.yaml
+  - mariadb/04-statefulset.yaml
+  - mariadb/05-service.yaml
+  - mariadb/06-headless-service.yaml
+  - sqlserver/01-secret.yaml
+  - sqlserver/02-pvc.yaml
+  - sqlserver/03-statefulset.yaml
+  - sqlserver/04-service.yaml
+  - sqlserver/05-nodeport.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: clarity
+  managed-by: kustomize

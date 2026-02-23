@@ -1,0 +1,29 @@
+# =============================================================================
+#  Clarity SQL Server — PersistentVolumeClaim
+#
+#  SQL Server stores all data under /var/opt/mssql:
+#    /var/opt/mssql/data/   — MDF (data) and LDF (log) files
+#    /var/opt/mssql/log/    — SQL Server error log
+#    /var/opt/mssql/secrets/ — SQL Server encryption keys
+#
+#  Minimum recommended: 10Gi (data) + 5Gi (logs) = 15Gi.
+#  Adjust based on expected transaction volume and retention.
+# =============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clarity-sqlserver-data
+  namespace: clarity-db
+  labels:
+    app.kubernetes.io/name: clarity-sqlserver
+    app.kubernetes.io/part-of: clarity
+    app.kubernetes.io/component: database
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 30Gi

@@ -1,0 +1,23 @@
+# =============================================================================
+#  Clarity MariaDB — ConfigMap
+#  Stores non-sensitive configuration values passed as environment variables
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clarity-mariadb-config
+  namespace: clarity-db
+  labels:
+    app.kubernetes.io/name: clarity-mariadb
+    app.kubernetes.io/part-of: clarity
+    app.kubernetes.io/component: database
+data:
+  # MariaDB server ID — must be unique per replica if using replication
+  MARIADB_SERVER_ID: "1"
+
+  # Timezone — keep UTC in the DB; application handles timezone conversion
+  TZ: "UTC"
+
+  # Auto-upgrade on minor version bump
+  MARIADB_AUTO_UPGRADE: "1"
+  MARIADB_DISABLE_UPGRADE_BACKUP: "1"

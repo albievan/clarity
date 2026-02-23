@@ -1,0 +1,234 @@
+# =============================================================================
+#  Clarity SQL Server 2022 — StatefulSet
+#
+#  Resource minimums (Microsoft requirements):
+#    Memory: 2 GB minimum (2048 MiB) — SQL Server will OOMKill below this
+#    CPU:    1 vCPU minimum recommended
+#
+#  PLATFORM NOTE:
+#    SQL Server for Linux is x86_64 ONLY.
+#    This will NOT run on ARM / aarch64 nodes.
+#    Rocky Linux 10 on standard x86_64 server hardware: supported.
+#
+#  Replace the image with your registry path before deploying:
+#    registry.your-company.com/clarity/clarity-sqlserver:1.0.0
+# =============================================================================
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: clarity-sqlserver
+  namespace: clarity-db
+  labels:
+    app.kubernetes.io/name: clarity-sqlserver
+    app.kubernetes.io/part-of: clarity
+    app.kubernetes.io/component: database
+    app.kubernetes.io/version: "2022"
+spec:
+  serviceName: clarity-sqlserver-headless
+  replicas: 1          # SQL Server AG (Always On) requires additional configuration
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: clarity-sqlserver
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: clarity-sqlserver
+        app.kubernetes.io/part-of: clarity
+        app.kubernetes.io/component: database
+    spec:
+      # ---------------------------------------------------------------------------
+      # Security context
+      # SQL Server runs internally as mssql (uid 10001, gid 0)
+      # The image handles the privilege drop internally.
+      # Rocky Linux 10 SELinux: fsGroup ensures volume is accessible.
+      # ---------------------------------------------------------------------------
+      securityContext:
+        fsGroup: 0             # SQL Server mssql user is in group 0 (root group)
+        runAsUser: 10001       # mssql user uid
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+
+      terminationGracePeriodSeconds: 120   # SQL Server needs time to flush and close
+
+      # ---------------------------------------------------------------------------
+      # Force x86_64 — prevents scheduling on ARM nodes (if mixed cluster)
+      # ---------------------------------------------------------------------------
+      nodeSelector:
+        kubernetes.io/arch: amd64
+
+      # ---------------------------------------------------------------------------
+      # Init container — fix volume permissions for Rocky Linux 10 SELinux
+      # SQL Server requires /var/opt/mssql to be owned by mssql (10001)
+      # ---------------------------------------------------------------------------
+      initContainers:
+        - name: fix-permissions
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              chown -R 10001:0 /var/opt/mssql && \
+              chmod -R 750 /var/opt/mssql && \
+              echo "SQL Server volume permissions fixed (10001:0)"
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: true
+          volumeMounts:
+            - name: clarity-sqlserver-data
+              mountPath: /var/opt/mssql
+
+      containers:
+        - name: sqlserver
+          # ---------------------------------------------------------------------------
+          # CHANGE THIS to your registry:
+          #   e.g. registry.clarity.internal/clarity-sqlserver:1.0.0
+          # ---------------------------------------------------------------------------
+          image: localhost:5000/clarity/clarity-sqlserver:1.0.0
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: mssql
+              containerPort: 1433
+              protocol: TCP
+
+          # -------------------------------------------------------------------------
+          # Environment variables
+          # -------------------------------------------------------------------------
+          env:
+            # Microsoft EULA — must be Y
+            - name: ACCEPT_EULA
+              value: "Y"
+
+            # Licence edition — Developer = free for non-production
+            - name: MSSQL_PID
+              value: "Developer"
+
+            # SA password from Secret
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clarity-sqlserver-secret
+                  key: sa-password
+
+            # Application user credentials (used by entrypoint.sh to create user)
+            - name: CLARITY_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: clarity-sqlserver-secret
+                  key: app-user
+            - name: CLARITY_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: clarity-sqlserver-secret
+                  key: app-password
+            - name: CLARITY_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: clarity-sqlserver-secret
+                  key: db-name
+
+            # Memory limit — must match resources.limits.memory
+            # SQL Server uses this to cap buffer pool allocation
+            - name: MSSQL_MEMORY_LIMIT_MB
+              value: "2048"
+
+            # TCP port
+            - name: MSSQL_TCP_PORT
+              value: "1433"
+
+            # Timezone
+            - name: TZ
+              value: "UTC"
+
+          # -------------------------------------------------------------------------
+          # Resource limits
+          # SQL Server hard minimum: 2 GB RAM. Do NOT set limits.memory below 2Gi.
+          # -------------------------------------------------------------------------
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"     # Adjust based on workload
+              cpu: "2000m"
+
+          # -------------------------------------------------------------------------
+          # Liveness probe — restart pod if SQL Server process hangs
+          # Uses TCP socket check (simpler, more reliable than sqlcmd for liveness)
+          # -------------------------------------------------------------------------
+          livenessProbe:
+            tcpSocket:
+              port: mssql
+            initialDelaySeconds: 60   # SQL Server takes time to start
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+            successThreshold: 1
+
+          # -------------------------------------------------------------------------
+          # Readiness probe — only route traffic when SQL Server accepts queries
+          # -------------------------------------------------------------------------
+          readinessProbe:
+            exec:
+              command:
+                - /opt/mssql-tools18/bin/sqlcmd
+                - -S
+                - "localhost,1433"
+                - -U
+                - sa
+                - -P
+                - "$(MSSQL_SA_PASSWORD)"
+                - -Q
+                - "SELECT 1"
+                - -No
+                - -C
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 6
+            successThreshold: 1
+
+          # -------------------------------------------------------------------------
+          # Startup probe — extended window for first-boot schema initialisation
+          # Max startup time: 60 × 10s = 600s (10 minutes)
+          # Schema init on a cold start typically takes 30–90 seconds
+          # -------------------------------------------------------------------------
+          startupProbe:
+            tcpSocket:
+              port: mssql
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60  # 60 × 10s = 600s maximum startup
+            successThreshold: 1
+
+          # -------------------------------------------------------------------------
+          # Volume mounts
+          # -------------------------------------------------------------------------
+          volumeMounts:
+            - name: clarity-sqlserver-data
+              mountPath: /var/opt/mssql   # All SQL Server data, logs, and keys
+
+          # -------------------------------------------------------------------------
+          # Security context for the SQL Server container
+          # SQL Server needs specific capabilities to run correctly
+          # -------------------------------------------------------------------------
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false  # SQL Server writes to /tmp
+            capabilities:
+              drop:
+                - ALL
+              add:
+                # SQL Server requires these to manage memory and IPC
+                - SYS_PTRACE
+                - NET_BIND_SERVICE
+
+      volumes:
+        - name: clarity-sqlserver-data
+          persistentVolumeClaim:
+            claimName: clarity-sqlserver-data

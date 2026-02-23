@@ -1,0 +1,31 @@
+# =============================================================================
+#  Clarity MariaDB — PersistentVolumeClaim
+#
+#  k3s default storage class: local-path (hostPath-based, node-local)
+#  Data is stored at: /var/lib/rancher/k3s/storage/<pvc-name>/
+#
+#  WARNING: local-path is NOT replicated. For production:
+#    - Use a replicated storage class (Longhorn, Rook-Ceph, NFS-CSI)
+#    - Install Longhorn: kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/master/deploy/longhorn.yaml
+#    - Then change storageClassName to "longhorn"
+# =============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clarity-mariadb-data
+  namespace: clarity-db
+  labels:
+    app.kubernetes.io/name: clarity-mariadb
+    app.kubernetes.io/part-of: clarity
+    app.kubernetes.io/component: database
+  annotations:
+    # Retain PVC when StatefulSet is deleted — prevents accidental data loss
+    # Change to "Delete" only in dev/test environments
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    - ReadWriteOnce           # Single-node access — correct for k3s local-path
+  storageClassName: local-path  # k3s default; change to "longhorn" for HA
+  resources:
+    requests:
+      storage: 20Gi           # Adjust based on expected data volume

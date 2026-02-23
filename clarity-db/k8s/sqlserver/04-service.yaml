@@ -1,0 +1,56 @@
+# =============================================================================
+#  Clarity SQL Server — Services
+#
+#  Application connection string (from within the cluster):
+#    Server=clarity-sqlserver.clarity-db.svc.cluster.local,1433;
+#    Database=clarity;
+#    User Id=clarity_app;Password=<from secret>;
+#    TrustServerCertificate=True;
+# =============================================================================
+---
+# Headless service for StatefulSet DNS
+apiVersion: v1
+kind: Service
+metadata:
+  name: clarity-sqlserver-headless
+  namespace: clarity-db
+  labels:
+    app.kubernetes.io/name: clarity-sqlserver
+    app.kubernetes.io/part-of: clarity
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: clarity-sqlserver
+  ports:
+    - name: mssql
+      port: 1433
+      targetPort: mssql
+      protocol: TCP
+
+---
+# Application-facing ClusterIP service
+apiVersion: v1
+kind: Service
+metadata:
+  name: clarity-sqlserver
+  namespace: clarity-db
+  labels:
+    app.kubernetes.io/name: clarity-sqlserver
+    app.kubernetes.io/part-of: clarity
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: clarity-sqlserver
+  ports:
+    - name: mssql
+      port: 1433
+      targetPort: mssql
+      protocol: TCP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800

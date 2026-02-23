@@ -1,0 +1,15 @@
+# =============================================================================
+#  Clarity — Kubernetes Namespace
+#  Apply first: kubectl apply -f k8s/00-namespace.yaml
+# =============================================================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: clarity-db
+  labels:
+    app.kubernetes.io/part-of: clarity
+    environment: production
+  annotations:
+    # Rocky Linux 10 / SELinux: allow containers to read/write volumes
+    # This annotation works with the local-path provisioner used by k3s
+    openshift.io/sa.scc.supplemental-groups: "999/1"

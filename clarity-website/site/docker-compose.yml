@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  clarity-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clarity-website
+    ports:
+      - "9081:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "com.clarity.service=website"
+      - "com.clarity.version=1.0.0"

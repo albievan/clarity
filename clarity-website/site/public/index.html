@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clarity — Budget Management Platform</title>
+  <meta name="description" content="Clarity gives finance teams complete visibility over every budget, commitment, and expenditure — from request to approval to close.">
+  <link rel="icon" type="image/svg+xml" href="/assets/logo-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <img src="/assets/logo-white.svg" alt="Clarity" height="36" />
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#workflow">How it works</a></li>
+        <li><a href="#security">Security</a></li>
+        <!--<li><a href="#contact" class="nav-cta">Request a demo</a></li>-->
+        <li><a href="clarity-mockup.html" class="nav-cta">Request a demo</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features" class="mobile-link">Features</a>
+    <a href="#workflow" class="mobile-link">How it works</a>
+    <a href="#security" class="mobile-link">Security</a>
+   <!-- <a href="#contact" class="mobile-link mobile-cta">Request a demo</a>-->
+    <a href="clarity-mockup.html" class="mobile-link mobile-cta">Request a demo</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg">
+      <div class="grid-overlay"></div>
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-eyebrow reveal">
+        <span class="eyebrow-dot"></span>
+        Budget Management Platform
+      </div>
+      <h1 class="hero-title reveal delay-1">
+        See every pound.<br>
+        <em>At every stage.</em>
+      </h1>
+      <p class="hero-sub reveal delay-2">
+        Clarity replaces spreadsheets, email chains, and Planview exports with a single real-time platform — from budget request through approval, commitment, actuals, and close.
+      </p>
+      <div class="hero-actions reveal delay-3">
+        <!--<a href="#contact" class="btn btn-primary">Request a demo</a>-->
+        <a href="clarity-mockup.html" class="btn btn-ghost">Request a demo</a>
+        <a href="#workflow" class="btn btn-ghost">See how it works</a>
+      </div>
+      <div class="hero-stats reveal delay-4">
+        <div class="stat">
+          <span class="stat-num">42</span>
+          <span class="stat-label">Sections of specification</span>
+        </div>
+        <div class="stat-div"></div>
+        <div class="stat">
+          <span class="stat-num">7</span>
+          <span class="stat-label">User roles</span>
+        </div>
+        <div class="stat-div"></div>
+        <div class="stat">
+          <span class="stat-num">10</span>
+          <span class="stat-label">Microservices</span>
+        </div>
+        <div class="stat-div"></div>
+        <div class="stat">
+          <span class="stat-num">100%</span>
+          <span class="stat-label">Audit-traced</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual reveal delay-2">
+      <div class="dashboard-mock">
+        <div class="mock-header">
+          <div class="mock-dots"><span></span><span></span><span></span></div>
+          <div class="mock-title">Clarity — Q1 FY2026 Overview</div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-kpis">
+            <div class="kpi kpi-green">
+              <div class="kpi-label">Total Budget</div>
+              <div class="kpi-value">£4,280,000</div>
+              <div class="kpi-bar"><div class="kpi-fill" style="width:100%"></div></div>
+            </div>
+            <div class="kpi kpi-blue">
+              <div class="kpi-label">Committed</div>
+              <div class="kpi-value">£1,940,200</div>
+              <div class="kpi-bar"><div class="kpi-fill" style="width:45%"></div></div>
+            </div>
+            <div class="kpi kpi-teal">
+              <div class="kpi-label">Actuals</div>
+              <div class="kpi-value">£872,560</div>
+              <div class="kpi-bar"><div class="kpi-fill" style="width:20%"></div></div>
+            </div>
+            <div class="kpi kpi-amber">
+              <div class="kpi-label">Remaining</div>
+              <div class="kpi-value">£1,467,240</div>
+              <div class="kpi-bar"><div class="kpi-fill" style="width:35%"></div></div>
+            </div>
+          </div>
+          <div class="mock-chart">
+            <div class="chart-label">Spend by department</div>
+            <div class="chart-bars">
+              <div class="chart-row"><span>Technology</span><div class="bar-wrap"><div class="bar" style="width:78%"></div></div><span class="bar-val">£1.2M</span></div>
+              <div class="chart-row"><span>Operations</span><div class="bar-wrap"><div class="bar" style="width:54%"></div></div><span class="bar-val">£840K</span></div>
+              <div class="chart-row"><span>HR</span><div class="bar-wrap"><div class="bar bar-teal" style="width:32%"></div></div><span class="bar-val">£495K</span></div>
+              <div class="chart-row"><span>Finance</span><div class="bar-wrap"><div class="bar bar-teal" style="width:22%"></div></div><span class="bar-val">£340K</span></div>
+              <div class="chart-row"><span>Marketing</span><div class="bar-wrap"><div class="bar bar-amber" style="width:15%"></div></div><span class="bar-val">£228K</span></div>
+            </div>
+          </div>
+          <div class="mock-alerts">
+            <div class="alert-item alert-amber">
+              <span class="alert-icon">◈</span>
+              <span>3 agreements expiring within 90 days</span>
+            </div>
+            <div class="alert-item alert-blue">
+              <span class="alert-icon">◉</span>
+              <span>7 approvals awaiting your review</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section id="problem">
+    <div class="container">
+      <div class="problem-grid">
+        <div class="problem-text reveal">
+          <p class="section-eyebrow">The problem</p>
+          <h2 class="section-title">Budget management<br>is still broken.</h2>
+          <p class="section-body">
+            Finance teams spend hundreds of hours each year reconciling spreadsheets, chasing approvals over email, and manually compiling reports that are out of date the moment they're published. There is no single source of truth. Commitments are invisible. Actuals arrive weeks late. Renewal deadlines are missed.
+          </p>
+          <p class="section-body">
+            Clarity was built to fix this — not by adding another integration to an ERP system, but by giving every stakeholder in the budget process a role-appropriate, real-time view of where money is going and why.
+          </p>
+        </div>
+        <div class="problem-cards reveal delay-1">
+          <div class="pain-card">
+            <div class="pain-icon">⊘</div>
+            <h3>No real-time visibility</h3>
+            <p>Budgets live in spreadsheets that are hours or days out of date by the time anyone reads them.</p>
+          </div>
+          <div class="pain-card">
+            <div class="pain-icon">⊘</div>
+            <h3>Approval by email</h3>
+            <p>Approval chains run through inboxes with no audit trail, no escalation, and no accountability.</p>
+          </div>
+          <div class="pain-card">
+            <div class="pain-icon">⊘</div>
+            <h3>Missed renewals</h3>
+            <p>Support and maintenance agreements expire without warning, creating unplanned emergency spend.</p>
+          </div>
+          <div class="pain-card">
+            <div class="pain-icon">⊘</div>
+            <h3>Opaque commitments</h3>
+            <p>Open purchase orders and encumbrances are invisible, making forecasts systematically wrong.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Platform capabilities</p>
+        <h2 class="section-title">Everything a finance team needs.<br><em>Nothing it doesn't.</em></h2>
+      </div>
+      <div class="features-grid">
+
+        <div class="feature-card feature-large reveal">
+          <div class="feature-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5"/><path d="M8 16 C8 16 10 9 16 9 C22 9 24 16 24 16 C24 16 22 23 16 23 C10 23 8 16 8 16Z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+          </div>
+          <h3>Complete budget visibility</h3>
+          <p>Real-time running balances across every dimension — department, cost centre, project, vendor, and geography. Planned, committed, actual, and remaining — always current.</p>
+          <ul class="feature-list">
+            <li>CapEx & OpEx classification</li>
+            <li>Multi-currency with FX snapshots</li>
+            <li>Split cost centre allocation</li>
+            <li>Hierarchical department roll-ups</li>
+          </ul>
+        </div>
+
+        <div class="feature-card reveal delay-1">
+          <div class="feature-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 8 L28 8 M4 16 L20 16 M4 24 L24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="26" cy="16" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="28" cy="24" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <h3>Configurable approvals</h3>
+          <p>Visual workflow builder with multi-level rules, two-person integrity for high-value items, delegation, and escalation.</p>
+        </div>
+
+        <div class="feature-card reveal delay-2">
+          <div class="feature-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="24" height="24" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 12 L28 12" stroke="currentColor" stroke-width="1.5"/><path d="M10 8 L10 4 M22 8 L22 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="20" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <h3>Agreement calendar</h3>
+          <p>See every support & maintenance contract on a visual calendar with 90/30/7-day expiry alerts and acknowledgement tracking.</p>
+        </div>
+
+        <div class="feature-card reveal">
+          <div class="feature-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 26 L6 18 M12 26 L12 12 M18 26 L18 16 M24 26 L24 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M6 18 L12 12 L18 16 L24 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Advanced forecasting</h3>
+          <p>Three projection models — linear run-rate, committed + actuals, manual — with RAG indicators and automatic forecast alerts.</p>
+        </div>
+
+        <div class="feature-card reveal delay-1">
+          <div class="feature-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M8 8 L8 24 L24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 18 L13 13 L18 16 L24 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Cross-period trend analysis</h3>
+          <p>Compare budget performance across up to 5 fiscal years simultaneously, normalised for FX, with federated access to archived data.</p>
+        </div>
+
+        <div class="feature-card reveal delay-2">
+          <div class="feature-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="10" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M6 26 C6 20 26 20 26 26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M22 14 L28 14 M25 11 L25 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Bottom-up budget intake</h3>
+          <p>Budget Requestors submit proposals for Department Head review before they reach the formal budget — a structured, auditable intake layer.</p>
+        </div>
+
+        <div class="feature-card reveal">
+          <div class="feature-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect x="4" y="8" width="24" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M4 14 L28 14" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="20" r="1.5" fill="currentColor"/><path d="M14 20 L22 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Purchase order lifecycle</h3>
+          <p>Full PO management with line items, goods receipt, partial delivery, dispute handling, and automatic encumbrance release on close.</p>
+        </div>
+
+        <div class="feature-card reveal delay-1">
+          <div class="feature-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 4 L16 28 M4 16 L28 16" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.4"/><circle cx="16" cy="16" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M16 16 L22 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="currentColor"/></svg>
+          </div>
+          <h3>AI justification assistant</h3>
+          <p>Anthropic Claude API or local Ollama — helps users write persuasive, professional budget justifications with a single click.</p>
+        </div>
+
+        <div class="feature-card feature-large reveal delay-2">
+          <div class="feature-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 28 L4 4 M4 22 L10 15 L16 18 L22 10 L28 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="15" r="2" fill="currentColor"/><circle cx="16" cy="18" r="2" fill="currentColor"/><circle cx="22" cy="10" r="2" fill="currentColor"/></svg>
+          </div>
+          <h3>Immutable audit trail</h3>
+          <p>Every budget change, approval, rejection, and cost amendment is cryptographically hashed and retained for 7 years. Every rejection requires a reason. Every cost change requires a justification. Finance Controllers get a full-featured audit log viewer with before/after diffs.</p>
+          <ul class="feature-list">
+            <li>Mandatory rejection reason library</li>
+            <li>Cost change justification modal</li>
+            <li>Searchable audit log viewer UI</li>
+            <li>SOX & GDPR compliant by design</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKFLOW -->
+  <section id="workflow">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">How Clarity works</p>
+        <h2 class="section-title">One platform.<br><em>The complete budget lifecycle.</em></h2>
+      </div>
+      <div class="workflow-steps">
+        <div class="workflow-step reveal">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h3>Request</h3>
+            <p>Budget Requestors submit proposals to their Department Head — with AI-assisted justifications, supporting documents, and vendor selections from the pre-configured register.</p>
+          </div>
+        </div>
+        <div class="workflow-connector"></div>
+        <div class="workflow-step reveal delay-1">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h3>Approve</h3>
+            <p>Multi-level approval workflows with configurable rules, two-person integrity for high-value items, delegation, automatic escalation, and structured rejection reasons.</p>
+          </div>
+        </div>
+        <div class="workflow-connector"></div>
+        <div class="workflow-step reveal delay-2">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h3>Commit</h3>
+            <p>Approved budgets generate purchase orders. Encumbrances are tracked in real time. Goods receipt converts committed spend to confirmed actuals automatically.</p>
+          </div>
+        </div>
+        <div class="workflow-connector"></div>
+        <div class="workflow-step reveal delay-3">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h3>Track</h3>
+            <p>Real-time dashboards, cross-period trend analysis, commitment ageing reports, and budget utilisation forecasting — all in one place, always live.</p>
+          </div>
+        </div>
+        <div class="workflow-connector"></div>
+        <div class="workflow-step reveal delay-4">
+          <div class="step-num">05</div>
+          <div class="step-content">
+            <h3>Close</h3>
+            <p>Formal period close-down with soft lock, hard lock, carry-over rules, and a Period Close Summary Report. Every step dual-approved and permanently audited.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLES -->
+  <section id="roles">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Built for every stakeholder</p>
+        <h2 class="section-title">The right view.<br><em>For every role.</em></h2>
+      </div>
+      <div class="roles-grid">
+        <div class="role-card reveal">
+          <div class="role-badge">Finance Controller</div>
+          <p>Full platform access. Audit log viewer. Period close. FX rate management. Cross-department reporting. Agreement calendar. GDPR controls.</p>
+        </div>
+        <div class="role-card reveal delay-1">
+          <div class="role-badge">Budget Owner</div>
+          <p>Create and manage departmental budgets. Raise POs. Record actuals. Review intake queue. Initiate recurring cost projections.</p>
+        </div>
+        <div class="role-card reveal delay-2">
+          <div class="role-badge">Budget Approver</div>
+          <p>Review and approve budget submissions. Access delegation for when you're away. Two-person integrity for high-value items.</p>
+        </div>
+        <div class="role-card reveal">
+          <div class="role-badge">Department Head</div>
+          <p>Review and approve bottom-up budget item requests from your team before they reach the formal budget. Intake approval queue with full context.</p>
+        </div>
+        <div class="role-card reveal delay-1">
+          <div class="role-badge">Budget Requestor</div>
+          <p>Submit budget proposals with AI-assisted justifications. Track status in real time. Never wonder where your request went again.</p>
+        </div>
+        <div class="role-card reveal delay-2">
+          <div class="role-badge">IT Administrator</div>
+          <p>Full platform administration. SCIM provisioning. Vault secrets management. Security policy configuration. Feature flags. Monitoring dashboards.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECURITY -->
+  <section id="security">
+    <div class="container">
+      <div class="security-grid">
+        <div class="security-text reveal">
+          <p class="section-eyebrow">Security & compliance</p>
+          <h2 class="section-title">Enterprise-grade security.<br><em>Zero compromises.</em></h2>
+          <p class="section-body">
+            Clarity was designed security-first. Every secret lives in HashiCorp Vault or CyberArk Conjur — never in environment variables or config files. Every service-to-service call uses mutual TLS. Every financial record is cryptographically hashed and immutable.
+          </p>
+          <div class="security-badges">
+            <div class="badge">GDPR compliant</div>
+            <div class="badge">SOX controls</div>
+            <div class="badge">WCAG 2.1 AA</div>
+            <div class="badge">TLS 1.2+ everywhere</div>
+            <div class="badge">OWASP Top 10</div>
+            <div class="badge">7-year audit retention</div>
+          </div>
+        </div>
+        <div class="security-cards reveal delay-1">
+          <div class="sec-card">
+            <div class="sec-icon">⬡</div>
+            <h4>Zero-trust secrets</h4>
+            <p>Vault Agent sidecars deliver secrets in-memory. No service ever touches a credential at rest.</p>
+          </div>
+          <div class="sec-card">
+            <div class="sec-icon">⬡</div>
+            <h4>Immutable audit log</h4>
+            <p>Cryptographic hash per entry. Finance Controllers can verify integrity in the UI.</p>
+          </div>
+          <div class="sec-card">
+            <div class="sec-icon">⬡</div>
+            <h4>Multi-tenant isolation</h4>
+            <p>Schema-per-tenant database isolation. Cross-tenant access is architecturally impossible.</p>
+          </div>
+          <div class="sec-card">
+            <div class="sec-icon">⬡</div>
+            <h4>SCIM provisioning</h4>
+            <p>Auto-deprovisioning via Entra ID. Departed users lose access before the end of their last day.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEPLOYMENT -->
+  <section id="deployment">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Deployment flexibility</p>
+        <h2 class="section-title">Cloud-hosted or on-premise.<br><em>Your choice. Your data.</em></h2>
+      </div>
+      <div class="deploy-cards">
+        <div class="deploy-card reveal">
+          <div class="deploy-icon">☁</div>
+          <h3>Cloud-hosted SaaS</h3>
+          <p>Deploy to AWS, Azure, or GCP. Kubernetes-native. Fully managed upgrades. 99.5% SLA.</p>
+          <ul>
+            <li>Anthropic Claude API for AI features</li>
+            <li>Managed S3-compatible storage</li>
+            <li>Auto-scaling microservices</li>
+          </ul>
+        </div>
+        <div class="deploy-card reveal delay-1">
+          <div class="deploy-icon">⬙</div>
+          <h3>On-premise</h3>
+          <p>Full Docker Compose deployment. No external dependencies. Your network, your rules.</p>
+          <ul>
+            <li>Ollama local LLM for AI features</li>
+            <li>MinIO or existing object storage</li>
+            <li>HashiCorp Vault or CyberArk Conjur</li>
+          </ul>
+        </div>
+        <div class="deploy-card reveal delay-2">
+          <div class="deploy-icon">⬡</div>
+          <h3>Hybrid</h3>
+          <p>Run on-premise with cloud DR. Or cloud-primary with data residency controls. Clarity adapts.</p>
+          <ul>
+            <li>Configurable data residency</li>
+            <li>Cross-region backup replication</li>
+            <li>Independent tenant environments</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA / CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="cta-box reveal">
+        <div class="cta-logo">
+          <img src="/assets/logo-white.svg" alt="Clarity" height="40" />
+        </div>
+        <h2 class="cta-title">Ready to see everything clearly?</h2>
+        <p class="cta-sub">Book a 30-minute demonstration. We'll walk you through the full budget lifecycle — from intake request to period close — in your environment, with your use cases.</p>
+        <form class="contact-form" id="contactForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Full name</label>
+              <input type="text" id="name" name="name" placeholder="Jane Smith" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Work email</label>
+              <input type="email" id="email" name="email" placeholder="jane@company.com" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="company">Company</label>
+              <input type="text" id="company" name="company" placeholder="Acme Corporation" required />
+            </div>
+            <div class="form-group">
+              <label for="role">Your role</label>
+              <select id="role" name="role">
+                <option value="">Select...</option>
+                <option>Finance Controller / CFO</option>
+                <option>IT Director / CTO</option>
+                <option>Head of Finance</option>
+                <option>Budget Manager</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group form-group-full">
+            <label for="message">What's your biggest budget management challenge?</label>
+            <textarea id="message" name="message" rows="3" placeholder="Tell us what you're trying to solve..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-lg">Book a demo</button>
+            <p class="form-note">No spam. No sales pressure. Just a focused 30-minute conversation.</p>
+          </div>
+        </form>
+        <div class="form-success" id="formSuccess" style="display:none">
+          <div class="success-icon">✓</div>
+          <h3>Thank you — we'll be in touch shortly.</h3>
+          <p>A member of the Clarity team will contact you within one business day to arrange your demonstration.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="/assets/logo-white.svg" alt="Clarity" height="28" />
+          <p>Budget management platform for<br>finance teams that need real answers.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>Platform</h4>
+            <a href="#features">Features</a>
+            <a href="#workflow">How it works</a>
+            <a href="#security">Security</a>
+            <a href="#deployment">Deployment</a>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <!--<a href="#contact">Request a demo</a>-->
+            <a href="clarity-mockup.html">Request a demo</a>
+            <a href="#">Privacy policy</a>
+            <a href="#">Terms of service</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Clarity. All rights reserved.</p>
+        <p class="footer-tagline">See every pound. At every stage.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/main.js"></script>
+</body>
+</html>

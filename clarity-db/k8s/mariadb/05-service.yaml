@@ -1,0 +1,66 @@
+# =============================================================================
+#  Clarity MariaDB — Services
+#
+#  Two services are created:
+#
+#  1. clarity-mariadb-headless (ClusterIP: None)
+#     - Required by StatefulSet for stable DNS per pod
+#     - DNS: clarity-mariadb-0.clarity-mariadb-headless.clarity-db.svc.cluster.local
+#     - Used for replication peer discovery
+#
+#  2. clarity-mariadb (ClusterIP)
+#     - Load-balanced service endpoint for application connections
+#     - DNS: clarity-mariadb.clarity-db.svc.cluster.local:3306
+#     - Application connection string:
+#         clarity-mariadb.clarity-db.svc.cluster.local:3306/clarity
+# =============================================================================
+---
+# Headless service — required by StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: clarity-mariadb-headless
+  namespace: clarity-db
+  labels:
+    app.kubernetes.io/name: clarity-mariadb
+    app.kubernetes.io/part-of: clarity
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  clusterIP: None           # Headless — no load balancing
+  publishNotReadyAddresses: true  # Needed for replication: replicas contact primary before ready
+  selector:
+    app.kubernetes.io/name: clarity-mariadb
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: mysql
+      protocol: TCP
+
+---
+# Application-facing ClusterIP service
+apiVersion: v1
+kind: Service
+metadata:
+  name: clarity-mariadb
+  namespace: clarity-db
+  labels:
+    app.kubernetes.io/name: clarity-mariadb
+    app.kubernetes.io/part-of: clarity
+    app.kubernetes.io/component: database
+  annotations:
+    # Preserve source IP for audit logging (shows application pod IP, not node IP)
+    service.kubernetes.io/topology-aware-hints: auto
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: clarity-mariadb
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: mysql
+      protocol: TCP
+  sessionAffinity: ClientIP       # Sticky sessions — same pod for same app pod
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800       # 3 hours — matches MariaDB wait_timeout
