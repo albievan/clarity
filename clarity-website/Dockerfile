@@ -2,7 +2,7 @@
 # Using alpine-based nginx for minimal image size
 FROM nginx:1.25-alpine
 
-LABEL maintainer="Clarity <team@clarity.io>"
+LABEL maintainer="Clarity <albievan@gmail.com>"
 LABEL description="Clarity Budget Management Platform — Marketing Website"
 LABEL version="1.0.0"
 

@@ -25,7 +25,7 @@ Site will be available at **http://localhost:8080**
 docker build -t clarity-website .
 
 # Run
-docker run -d -p 8080:80 --name clarity-website clarity-website
+docker compose up -d
 ```
 
 ### Local development (no Docker)
