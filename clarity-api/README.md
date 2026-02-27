@@ -596,4 +596,4 @@ Every query **must** include `WHERE tenant_id = $1`. The tenant ID is extracted 
 
 ## Licence
 
-Internal — Computershare / Clarity Platform. Not for external distribution.
+Internal — Merwe / Clarity Platform. Not for external distribution.
