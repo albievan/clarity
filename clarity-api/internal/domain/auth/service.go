@@ -36,11 +36,11 @@ type MFAConfirmResponse struct {
 
 // Session is a user's active session record.
 type Session struct {
-	ID         string `json:"id"`
-	IPAddress  string `json:"ip_address"`
-	UserAgent  string `json:"user_agent"`
-	LastUsedAt string `json:"last_used_at"`
-	IsCurrent  bool   `json:"is_current"`
+	ID          string `json:"id"`
+	IPAddress   string `json:"ip_address"`
+	UserAgent   string `json:"user_agent"`
+	LastUsedAt  string `json:"last_used_at"`
+	IsCurrent   bool   `json:"is_current"`
 }
 
 type service struct {

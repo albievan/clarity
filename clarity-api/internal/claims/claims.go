@@ -9,10 +9,10 @@ import (
 
 // Claims holds the decoded JWT payload injected by the auth middleware.
 type Claims struct {
-	Subject   string   // user UUID
-	TenantID  string   // tenant UUID
-	Roles     []string // role names
-	SessionID string   // session UUID (for logout)
+	Subject  string   // user UUID
+	TenantID string   // tenant UUID
+	Roles    []string // role names
+	SessionID string  // session UUID (for logout)
 }
 
 func FromCtx(ctx context.Context) (*Claims, error) {
@@ -57,10 +57,10 @@ func HasRole(ctx context.Context, roles ...string) bool {
 
 // Role constants mirror the roles table.
 const (
-	RoleITAdmin           = "it_admin"
-	RoleBudgetOwner       = "budget_owner"
-	RoleBudgetApprover    = "budget_approver"
-	RoleDeptHead          = "dept_head"
-	RoleFinanceController = "finance_controller"
-	RoleBudgetRequestor   = "budget_requestor"
+	RoleITAdmin            = "it_admin"
+	RoleBudgetOwner        = "budget_owner"
+	RoleBudgetApprover     = "budget_approver"
+	RoleDeptHead           = "dept_head"
+	RoleFinanceController  = "finance_controller"
+	RoleBudgetRequestor    = "budget_requestor"
 )

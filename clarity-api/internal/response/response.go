@@ -10,7 +10,7 @@ import (
 
 // Envelope is the root response wrapper for all list endpoints.
 type Envelope[T any] struct {
-	Data       T               `json:"data"`
+	Data       T              `json:"data"`
 	Pagination *PaginationMeta `json:"pagination,omitempty"`
 }
 

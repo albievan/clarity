@@ -33,17 +33,17 @@ const (
 
 // Entry is a single audit log row.
 type Entry struct {
-	ID          string
-	TenantID    string
-	ActorUserID string
-	EntityType  string
-	EntityID    string
-	Action      string
-	BeforeState *json.RawMessage
-	AfterState  *json.RawMessage
-	IPAddress   string
-	UserAgent   string
-	CreatedAt   time.Time
+	ID           string
+	TenantID     string
+	ActorUserID  string
+	EntityType   string
+	EntityID     string
+	Action       string
+	BeforeState  *json.RawMessage
+	AfterState   *json.RawMessage
+	IPAddress    string
+	UserAgent    string
+	CreatedAt    time.Time
 }
 
 // Writer is the interface that audit log writers implement.

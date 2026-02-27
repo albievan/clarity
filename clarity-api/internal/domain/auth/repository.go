@@ -13,30 +13,30 @@ import (
 
 // UserRecord is the DB row for authentication purposes.
 type UserRecord struct {
-	ID               string
-	TenantID         string
-	Email            string
-	PasswordHash     string
-	Status           string
-	FailedLoginCount int
-	LockedUntil      *time.Time
-	MFAEnabled       bool
-	MFASecret        string
-	MFASecretPending string
-	RequirePWChange  bool
+	ID                  string
+	TenantID            string
+	Email               string
+	PasswordHash        string
+	Status              string
+	FailedLoginCount    int
+	LockedUntil         *time.Time
+	MFAEnabled          bool
+	MFASecret           string
+	MFASecretPending    string
+	RequirePWChange     bool
 }
 
 // SessionRecord is the DB row for an active session.
 type SessionRecord struct {
-	ID         string
-	UserID     string
-	TenantID   string
-	TokenHash  string
-	IPAddress  string
-	UserAgent  string
-	ExpiresAt  time.Time
-	RevokedAt  *time.Time
-	LastUsedAt time.Time
+	ID          string
+	UserID      string
+	TenantID    string
+	TokenHash   string
+	IPAddress   string
+	UserAgent   string
+	ExpiresAt   time.Time
+	RevokedAt   *time.Time
+	LastUsedAt  time.Time
 }
 
 // Repository is the data-access contract for the auth domain.
@@ -58,9 +58,9 @@ type Repository interface {
 
 // SecurityPolicy is a subset of the security_policy table needed by the auth service.
 type SecurityPolicy struct {
-	LockoutThreshold     int
-	MFARequired          bool
-	MinPasswordLength    int
+	LockoutThreshold  int
+	MFARequired       bool
+	MinPasswordLength int
 	PasswordHistoryCount int
 }
 
