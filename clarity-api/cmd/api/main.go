@@ -11,12 +11,22 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
+
 	"github.com/albievan/clarity/clarity-api/internal/config"
 	"github.com/albievan/clarity/clarity-api/internal/db"
 	"github.com/albievan/clarity/clarity-api/internal/router"
 )
 
 func main() {
+	// Load .env file if present. Existing environment variables always win,
+	// so this is safe to leave in for production — it simply becomes a no-op
+	// when the file is absent or variables are already set.
+	if err := godotenv.Load(); err != nil && !os.IsNotExist(err) {
+		// Not a fatal error — .env is optional in production
+		slog.Warn("could not load .env file", "error", err)
+	}
+
 	cfg := config.Load()
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{

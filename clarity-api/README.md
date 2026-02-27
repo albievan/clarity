@@ -80,7 +80,61 @@ Copy the example environment file and fill in your values:
 cp .env.example .env
 ```
 
-Edit `.env` with your local settings. At minimum you need `JWT_SECRET` and `DB_DSN`. See [Configuration](#configuration) for all variables.
+Edit `.env` with your local settings. At minimum you need `JWT_SECRET` and `DB_DSN`. See [Configuration](#configuration) and [Passing the .env File](#passing-the-env-file-to-the-application) for full details.
+
+---
+
+## Passing the .env File to the Application
+
+The application uses `godotenv` to automatically load a `.env` file from the working directory at startup. No extra flags or tools are needed — just place a `.env` file in the project root and run the app normally.
+
+```bash
+make run      # auto-loads .env
+make start    # builds then runs binary — also auto-loads .env
+```
+
+**How it works:** `godotenv.Load()` is called at the top of `main()`. It reads `.env` and sets each key as an environment variable — but only if that variable is **not already set**. This means:
+
+- **Development:** `.env` is loaded automatically.
+- **Production:** real environment variables injected by your platform take precedence. `.env` is ignored even if present.
+- **No `.env` file:** the app starts normally with a warning log — not a fatal error.
+
+### Method 1 — Auto-load (default, recommended)
+
+```bash
+make run
+# or
+./bin/clarity-api
+```
+
+The `.env` file in the current directory is loaded automatically. Nothing extra required.
+
+### Method 2 — Docker `--env-file`
+
+```bash
+make docker-run
+# runs: docker run --rm -p 8080:8080 --env-file .env clarity-api:latest
+```
+
+Docker injects each `.env` line as a real environment variable inside the container. `godotenv` sees them already set and skips the file.
+
+### Method 3 — Shell export
+
+Source the file in your current shell session (useful for one-off commands):
+
+```bash
+set -a && source .env && set +a
+./bin/clarity-api
+# or: make env-run
+```
+
+### Method 4 — Inline overrides
+
+Pass individual variables on the command line. These always win over `.env` values:
+
+```bash
+JWT_SECRET=mysecret DB_DSN="postgres://..." ./bin/clarity-api
+```
 
 ### 4. Build the Binary
 
