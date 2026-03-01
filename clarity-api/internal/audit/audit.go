@@ -29,42 +29,46 @@ const (
 	ActionTPIConfirm = "TPI_CONFIRM"
 	ActionBulkImport = "BULK_IMPORT"
 	ActionReopen     = "REOPEN"
+	ActionLogin      = "LOGIN"
+	ActionLogout     = "LOGOUT"
+	ActionMFAEnable  = "MFA_ENABLE"
+	ActionMFADisable = "MFA_DISABLE"
+	ActionPWChange   = "PW_CHANGE"
+	ActionPWReset    = "PW_RESET"
 )
 
-// Entry is a single audit log row.
+// Entry is a single audit log row to be written.
 type Entry struct {
-	ID           string
-	TenantID     string
-	ActorUserID  string
-	EntityType   string
-	EntityID     string
-	Action       string
-	BeforeState  *json.RawMessage
-	AfterState   *json.RawMessage
-	IPAddress    string
-	UserAgent    string
-	CreatedAt    time.Time
+	ID          string
+	TenantID    string
+	ActorUserID string
+	EntityType  string           // matches table name, e.g. "budgets", "users"
+	EntityID    string           // the PK of the changed row
+	Action      string           // one of the Action constants above
+	BeforeState *json.RawMessage // serialised row before change; nil for inserts
+	AfterState  *json.RawMessage // serialised row after change; nil for deletes
+	IPAddress   string
+	UserAgent   string
+	CreatedAt   time.Time
 }
 
 // Writer is the interface that audit log writers implement.
+// Passing a *sql.Tx keeps the write in the same database transaction
+// as the business operation, so both succeed or fail together.
 type Writer interface {
 	Write(ctx context.Context, tx *sql.Tx, e Entry) error
 }
 
 // Logger is the concrete audit log writer.
-type Logger struct {
-	db interface {
-		QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
-	}
-}
+type Logger struct{}
 
-func New(db interface {
-	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
-}) *Logger {
-	return &Logger{db: db}
-}
+// New returns a Logger. The db parameter is accepted but not stored;
+// all writes are performed on the provided *sql.Tx in Write().
+func New(_ interface{}) *Logger { return &Logger{} }
 
-// Write appends a row to audit_log.
+// Write appends one row to audit_log inside the supplied transaction.
+// Fields not supplied by the caller (ID, ActorUserID, TenantID, CreatedAt)
+// are auto-populated from the context or generated here.
 func (l *Logger) Write(ctx context.Context, tx *sql.Tx, e Entry) error {
 	if e.ID == "" {
 		e.ID = newID()
@@ -77,23 +81,26 @@ func (l *Logger) Write(ctx context.Context, tx *sql.Tx, e Entry) error {
 	}
 	e.CreatedAt = time.Now().UTC()
 
-	var beforeJSON, afterJSON any
+	// Serialise before/after state as JSON; pass nil when not applicable.
+	var beforeJSON, afterJSON interface{}
 	if e.BeforeState != nil {
-		beforeJSON = e.BeforeState
+		beforeJSON = []byte(*e.BeforeState)
 	}
 	if e.AfterState != nil {
-		afterJSON = e.AfterState
+		afterJSON = []byte(*e.AfterState)
 	}
 
-	const q = `
+	// Uses ? placeholders — compatible with both MariaDB ("mysql" driver)
+	// and SQL Server (go-mssqldb maps ? → @p1, @p2, ... automatically).
+	_, err := tx.ExecContext(ctx, `
 		INSERT INTO audit_log
 		  (id, tenant_id, actor_user_id, entity_type, entity_id, action,
 		   before_state, after_state, ip_address, user_agent, created_at)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`
-
-	_, err := tx.ExecContext(ctx, q,
-		e.ID, e.TenantID, e.ActorUserID, e.EntityType, e.EntityID, e.Action,
-		beforeJSON, afterJSON, e.IPAddress, e.UserAgent, e.CreatedAt,
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		e.ID, e.TenantID, e.ActorUserID,
+		e.EntityType, e.EntityID, e.Action,
+		beforeJSON, afterJSON,
+		e.IPAddress, e.UserAgent, e.CreatedAt,
 	)
 	if err != nil {
 		return fmt.Errorf("audit.Write: %w", err)
@@ -101,7 +108,17 @@ func (l *Logger) Write(ctx context.Context, tx *sql.Tx, e Entry) error {
 	return nil
 }
 
-// Snapshot serialises a value to *json.RawMessage for before/after states.
+// Snapshot serialises any value to *json.RawMessage for before/after states.
+//
+// Usage:
+//
+//	auditLogger.Write(ctx, tx, audit.Entry{
+//	    EntityType:  "budgets",
+//	    EntityID:    budget.ID,
+//	    Action:      audit.ActionUpdate,
+//	    BeforeState: audit.Snapshot(oldBudget),
+//	    AfterState:  audit.Snapshot(newBudget),
+//	})
 func Snapshot(v any) *json.RawMessage {
 	b, _ := json.Marshal(v)
 	raw := json.RawMessage(b)

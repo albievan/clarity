@@ -35,7 +35,6 @@ func main() {
 	slog.SetDefault(logger)
 
 	database, err := db.Connect(cfg.DB)
-	slog.Info("Database driver", cfg.DB.Driver)
 	if err != nil {
 		slog.Error("failed to connect to database", "error", err)
 		os.Exit(1)

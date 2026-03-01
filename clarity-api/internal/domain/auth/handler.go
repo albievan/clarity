@@ -22,159 +22,203 @@ func NewHandler(svc Service, cfg config.JWTConfig) *Handler {
 	return &Handler{svc: svc, cfg: cfg}
 }
 
-// ── Request / Response types ──────────────────────────────────────
+// ── Public endpoints (no JWT required) ───────────────────────────────────────
 
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	TenantID string `json:"tenant_id"`
-}
-
-type LoginResponse struct {
-	AccessToken  string `json:"access_token,omitempty"`
-	RefreshToken string `json:"refresh_token,omitempty"`
-	MFARequired  bool   `json:"mfa_required,omitempty"`
-	MFAToken     string `json:"mfa_token,omitempty"`
-}
-
-type RefreshRequest struct {
-	RefreshToken string `json:"refresh_token"`
-}
-
-type MFAVerifyRequest struct {
-	MFAToken string `json:"mfa_token"`
-	Code     string `json:"code"`
-}
-
-type PasswordChangeRequest struct {
-	CurrentPassword string `json:"current_password"`
-	NewPassword     string `json:"new_password"`
-}
-
-type PasswordResetRequest struct {
-	Email string `json:"email"`
-}
-
-type PasswordResetCompleteRequest struct {
-	Token       string `json:"token"`
-	NewPassword string `json:"new_password"`
-}
-
-// ── Handlers ──────────────────────────────────────────────────────
-
-// Login handles POST /auth/login
+// Login handles POST /v1/auth/login
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.Error(w, apierr.BadRequest("invalid request body"))
 		return
 	}
-	// TODO: call h.svc.Login(r.Context(), req) → (LoginResponse, error)
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "Login not yet implemented"})
-}
-
-// Logout handles POST /auth/logout
-func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	c, err := claims.FromCtx(r.Context())
+	resp, err := h.svc.Login(r.Context(), req)
 	if err != nil {
-		response.Error(w, apierr.Unauthorized("missing claims"))
+		response.Error(w, err)
 		return
 	}
-	// TODO: call h.svc.Logout(r.Context(), c.TenantID, c.SessionID)
-	_ = c
-	response.NoContent(w)
+	response.OK(w, resp)
 }
 
-// Refresh handles POST /auth/refresh
+// Refresh handles POST /v1/auth/refresh
 func (h *Handler) Refresh(w http.ResponseWriter, r *http.Request) {
 	var req RefreshRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.Error(w, apierr.BadRequest("invalid request body"))
 		return
 	}
-	// TODO: call h.svc.Refresh(r.Context(), req.RefreshToken)
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "Refresh not yet implemented"})
+	resp, err := h.svc.Refresh(r.Context(), req.RefreshToken)
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.OK(w, resp)
 }
 
-// MFASetup handles POST /auth/mfa/setup
-func (h *Handler) MFASetup(w http.ResponseWriter, r *http.Request) {
-	c, _ := claims.FromCtx(r.Context())
-	// TODO: call h.svc.MFASetup(r.Context(), c.TenantID, c.Subject)
-	_ = c
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "MFASetup not yet implemented"})
-}
-
-// MFAConfirm handles POST /auth/mfa/confirm
-func (h *Handler) MFAConfirm(w http.ResponseWriter, r *http.Request) {
-	c, _ := claims.FromCtx(r.Context())
-	_ = c
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "MFAConfirm not yet implemented"})
-}
-
-// MFAVerify handles POST /auth/mfa/verify
+// MFAVerify handles POST /v1/auth/mfa/verify
+// Called after Login returns {mfa_required: true, mfa_token: "..."}.
 func (h *Handler) MFAVerify(w http.ResponseWriter, r *http.Request) {
 	var req MFAVerifyRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.Error(w, apierr.BadRequest("invalid request body"))
 		return
 	}
-	// TODO: call h.svc.MFAVerify(r.Context(), req.MFAToken, req.Code)
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "MFAVerify not yet implemented"})
-}
-
-// MFADisable handles POST /auth/mfa/disable
-func (h *Handler) MFADisable(w http.ResponseWriter, r *http.Request) {
-	c, _ := claims.FromCtx(r.Context())
-	_ = c
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "MFADisable not yet implemented"})
-}
-
-// PasswordChange handles POST /auth/password/change
-func (h *Handler) PasswordChange(w http.ResponseWriter, r *http.Request) {
-	var req PasswordChangeRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.Error(w, apierr.BadRequest("invalid request body"))
+	resp, err := h.svc.MFAVerify(r.Context(), req.MFAToken, req.Code)
+	if err != nil {
+		response.Error(w, err)
 		return
 	}
-	c, _ := claims.FromCtx(r.Context())
-	_ = c
-	// TODO: call h.svc.PasswordChange(r.Context(), c.TenantID, c.Subject, req)
-	response.NoContent(w)
+	response.OK(w, resp)
 }
 
-// PasswordResetRequest handles POST /auth/password/reset-request
+// PasswordResetRequest handles POST /v1/auth/password/reset-request
+// Always returns 204 regardless of whether the email exists (prevents enumeration).
 func (h *Handler) PasswordResetRequest(w http.ResponseWriter, r *http.Request) {
-	// Always return 204 regardless of email existence (prevents enumeration).
+	var req PasswordResetRequestBody
+	_ = json.NewDecoder(r.Body).Decode(&req) // silently ignore decode errors
+	_ = h.svc.PasswordResetRequest(r.Context(), req.TenantID, req.Email)
 	response.NoContent(w)
 }
 
-// PasswordReset handles POST /auth/password/reset
+// PasswordReset handles POST /v1/auth/password/reset
 func (h *Handler) PasswordReset(w http.ResponseWriter, r *http.Request) {
 	var req PasswordResetCompleteRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.Error(w, apierr.BadRequest("invalid request body"))
 		return
 	}
-	// TODO: call h.svc.PasswordReset(r.Context(), req.Token, req.NewPassword)
+	if err := h.svc.PasswordReset(r.Context(), req.Token, req.NewPassword); err != nil {
+		response.Error(w, err)
+		return
+	}
 	response.NoContent(w)
 }
 
-// ListSessions handles GET /auth/sessions
-func (h *Handler) ListSessions(w http.ResponseWriter, r *http.Request) {
-	c, _ := claims.FromCtx(r.Context())
-	_ = c
-	// TODO: call h.svc.ListSessions(r.Context(), c.TenantID, c.Subject)
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "ListSessions not yet implemented"})
-}
+// ── Authenticated endpoints (JWT required) ────────────────────────────────────
 
-// RevokeSession handles DELETE /auth/sessions/{sessionId}
-func (h *Handler) RevokeSession(w http.ResponseWriter, r *http.Request) {
-	sessionID := chi.URLParam(r, "sessionId")
-	c, _ := claims.FromCtx(r.Context())
-	if sessionID == c.SessionID {
-		response.Error(w, apierr.BadRequest("use /auth/logout to revoke the current session"))
+// Logout handles POST /v1/auth/logout
+func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
 		return
 	}
-	// TODO: call h.svc.RevokeSession(r.Context(), c.TenantID, c.Subject, sessionID)
+	if err := h.svc.Logout(r.Context(), c.TenantID, c.SessionID); err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.NoContent(w)
+}
+
+// MFASetup handles POST /v1/auth/mfa/setup
+// Returns the TOTP secret and an otpauth:// URI for QR code generation.
+func (h *Handler) MFASetup(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	resp, err := h.svc.MFASetup(r.Context(), c.TenantID, c.Subject)
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.OK(w, resp)
+}
+
+// MFAConfirm handles POST /v1/auth/mfa/confirm
+// Validates a TOTP code against the pending secret and activates MFA.
+// Returns one-time backup codes — these are only shown once.
+func (h *Handler) MFAConfirm(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	var req MFAConfirmRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, apierr.BadRequest("invalid request body"))
+		return
+	}
+	resp, err := h.svc.MFAConfirm(r.Context(), c.TenantID, c.Subject, req.Code)
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.OK(w, resp)
+}
+
+// MFADisable handles POST /v1/auth/mfa/disable
+// Requires current TOTP confirmation. Blocked if tenant policy mandates MFA.
+func (h *Handler) MFADisable(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	var req MFADisableRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, apierr.BadRequest("invalid request body"))
+		return
+	}
+	if err := h.svc.MFADisable(r.Context(), c.TenantID, c.Subject, req.Code); err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.NoContent(w)
+}
+
+// PasswordChange handles POST /v1/auth/password/change
+// Verifies the current password before updating. Revokes all other sessions.
+func (h *Handler) PasswordChange(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	var req PasswordChangeRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, apierr.BadRequest("invalid request body"))
+		return
+	}
+	if err := h.svc.PasswordChange(r.Context(), c.TenantID, c.Subject, req); err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.NoContent(w)
+}
+
+// ListSessions handles GET /v1/auth/sessions
+// Returns all active sessions for the calling user; marks the current one.
+func (h *Handler) ListSessions(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	sessions, err := h.svc.ListSessions(r.Context(), c.TenantID, c.Subject, c.SessionID)
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.OK(w, sessions)
+}
+
+// RevokeSession handles DELETE /v1/auth/sessions/{sessionId}
+// To revoke the current session use POST /auth/logout instead.
+func (h *Handler) RevokeSession(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	sessionID := chi.URLParam(r, "sessionId")
+	if sessionID == c.SessionID {
+		response.Error(w, apierr.BadRequest("use POST /auth/logout to revoke the current session"))
+		return
+	}
+	if err := h.svc.RevokeSession(r.Context(), c.TenantID, c.Subject, sessionID); err != nil {
+		response.Error(w, err)
+		return
+	}
 	response.NoContent(w)
 }

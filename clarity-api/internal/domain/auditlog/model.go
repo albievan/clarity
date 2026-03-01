@@ -1,32 +1,32 @@
 package auditlog
 
 import (
+	"encoding/json"
 	"time"
 )
 
-// AuditLog is the canonical model for the audit_log table.
-// Add, remove or rename fields to match the actual schema columns.
+// AuditEntry is a single row from the audit_log table.
+// This table is append-only — entries are never updated or deleted.
 type AuditEntry struct {
-	ID        string    `json:"id"       db:"id"`
-	TenantID  string    `json:"-"        db:"tenant_id"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
-	// TODO: add domain-specific fields
+	ID          string           `json:"id"`
+	TenantID    string           `json:"-"`
+	ActorUserID string           `json:"actor_user_id"`
+	EntityType  string           `json:"entity_type"` // e.g. "budgets", "users"
+	EntityID    string           `json:"entity_id"`
+	Action      string           `json:"action"` // INSERT | UPDATE | DELETE | SUBMIT | APPROVE …
+	BeforeState *json.RawMessage `json:"before_state,omitempty"`
+	AfterState  *json.RawMessage `json:"after_state,omitempty"`
+	IPAddress   string           `json:"ip_address"`
+	UserAgent   string           `json:"user_agent"`
+	CreatedAt   time.Time        `json:"created_at"`
 }
 
-// List filters for GET endpoints
+// Filter holds the optional query parameters for the list endpoint.
 type Filter struct {
-	TenantID string
-	Status   string
-	// TODO: add domain-specific filter fields
-}
-
-// CreateRequest is the decoded request body for POST (create) endpoints.
-type CreateRequest struct {
-	// TODO: define required fields
-}
-
-// UpdateRequest is the decoded request body for PUT (update) endpoints.
-type UpdateRequest struct {
-	// TODO: define fields that may be updated
+	EntityType  string // filter by table name
+	EntityID    string // filter by a specific record
+	ActorUserID string // filter by who made the change
+	Action      string // filter by action constant
+	From        *time.Time
+	To          *time.Time
 }
