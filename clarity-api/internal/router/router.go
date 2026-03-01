@@ -12,33 +12,33 @@ import (
 	"github.com/albievan/clarity/clarity-api/internal/db"
 	"github.com/albievan/clarity/clarity-api/internal/middleware"
 
-	domain_admin          "github.com/albievan/clarity/clarity-api/internal/domain/admin"
-	domain_agreements     "github.com/albievan/clarity/clarity-api/internal/domain/agreements"
-	domain_aijustify      "github.com/albievan/clarity/clarity-api/internal/domain/aijustification"
-	domain_auditlog       "github.com/albievan/clarity/clarity-api/internal/domain/auditlog"
-	domain_auth           "github.com/albievan/clarity/clarity-api/internal/domain/auth"
-	domain_budgetlines    "github.com/albievan/clarity/clarity-api/internal/domain/budgetlines"
-	domain_budgetperiods  "github.com/albievan/clarity/clarity-api/internal/domain/budgetperiods"
-	domain_budgets        "github.com/albievan/clarity/clarity-api/internal/domain/budgets"
+	domain_actuals "github.com/albievan/clarity/clarity-api/internal/domain/actuals"
+	domain_admin "github.com/albievan/clarity/clarity-api/internal/domain/admin"
+	domain_agreements "github.com/albievan/clarity/clarity-api/internal/domain/agreements"
+	domain_aijustify "github.com/albievan/clarity/clarity-api/internal/domain/aijustification"
+	domain_workflow "github.com/albievan/clarity/clarity-api/internal/domain/approvalworkflow"
+	domain_auditlog "github.com/albievan/clarity/clarity-api/internal/domain/auditlog"
+	domain_auth "github.com/albievan/clarity/clarity-api/internal/domain/auth"
+	domain_budgetlines "github.com/albievan/clarity/clarity-api/internal/domain/budgetlines"
+	domain_budgetperiods "github.com/albievan/clarity/clarity-api/internal/domain/budgetperiods"
+	domain_budgets "github.com/albievan/clarity/clarity-api/internal/domain/budgets"
 	domain_costcategories "github.com/albievan/clarity/clarity-api/internal/domain/costcategories"
-	domain_costcentres    "github.com/albievan/clarity/clarity-api/internal/domain/costcentres"
-	domain_currencies     "github.com/albievan/clarity/clarity-api/internal/domain/currencies"
-	domain_delegations    "github.com/albievan/clarity/clarity-api/internal/domain/delegations"
-	domain_departments    "github.com/albievan/clarity/clarity-api/internal/domain/departments"
-	domain_documents      "github.com/albievan/clarity/clarity-api/internal/domain/documents"
-	domain_forecasts      "github.com/albievan/clarity/clarity-api/internal/domain/forecasts"
-	domain_fxrates        "github.com/albievan/clarity/clarity-api/internal/domain/fxrates"
-	domain_intake         "github.com/albievan/clarity/clarity-api/internal/domain/intakerequests"
-	domain_locations      "github.com/albievan/clarity/clarity-api/internal/domain/locations"
-	domain_notifications  "github.com/albievan/clarity/clarity-api/internal/domain/notifications"
-	domain_periodclose    "github.com/albievan/clarity/clarity-api/internal/domain/periodclose"
+	domain_costcentres "github.com/albievan/clarity/clarity-api/internal/domain/costcentres"
+	domain_currencies "github.com/albievan/clarity/clarity-api/internal/domain/currencies"
+	domain_delegations "github.com/albievan/clarity/clarity-api/internal/domain/delegations"
+	domain_departments "github.com/albievan/clarity/clarity-api/internal/domain/departments"
+	domain_documents "github.com/albievan/clarity/clarity-api/internal/domain/documents"
+	domain_forecasts "github.com/albievan/clarity/clarity-api/internal/domain/forecasts"
+	domain_fxrates "github.com/albievan/clarity/clarity-api/internal/domain/fxrates"
+	domain_intake "github.com/albievan/clarity/clarity-api/internal/domain/intakerequests"
+	domain_locations "github.com/albievan/clarity/clarity-api/internal/domain/locations"
+	domain_notifications "github.com/albievan/clarity/clarity-api/internal/domain/notifications"
+	domain_periodclose "github.com/albievan/clarity/clarity-api/internal/domain/periodclose"
 	domain_purchaseorders "github.com/albievan/clarity/clarity-api/internal/domain/purchaseorders"
-	domain_actuals        "github.com/albievan/clarity/clarity-api/internal/domain/actuals"
-	domain_rejections     "github.com/albievan/clarity/clarity-api/internal/domain/rejectionreasons"
-	domain_smtypes        "github.com/albievan/clarity/clarity-api/internal/domain/smtypes"
-	domain_users          "github.com/albievan/clarity/clarity-api/internal/domain/users"
-	domain_vendors        "github.com/albievan/clarity/clarity-api/internal/domain/vendors"
-	domain_workflow       "github.com/albievan/clarity/clarity-api/internal/domain/approvalworkflow"
+	domain_rejections "github.com/albievan/clarity/clarity-api/internal/domain/rejectionreasons"
+	domain_smtypes "github.com/albievan/clarity/clarity-api/internal/domain/smtypes"
+	domain_users "github.com/albievan/clarity/clarity-api/internal/domain/users"
+	domain_vendors "github.com/albievan/clarity/clarity-api/internal/domain/vendors"
 )
 
 // New builds and returns the fully mounted chi router.
@@ -51,7 +51,7 @@ func New(cfg *config.Config, database *db.DB, logger *slog.Logger) http.Handler 
 	r.Use(middleware.Logger)
 	r.Use(chimw.Recoverer)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*", "http://localhost:*", "http://127.0.0.1:*"},
+		AllowedOrigins:   []string{"https://*", "http://localhost:*", "http://127.0.0.1:*", "localhost:*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "Idempotency-Key"},
 		ExposedHeaders:   []string{"X-RateLimit-Limit", "X-RateLimit-Remaining", "X-Request-ID"},
@@ -62,35 +62,35 @@ func New(cfg *config.Config, database *db.DB, logger *slog.Logger) http.Handler 
 	jwtSecret := cfg.JWT.Secret
 
 	// ── Domain handler wiring
-	usersSvc         := domain_users.NewService(domain_users.NewRepository(database))
-	authHandler      := domain_auth.NewHandler(domain_auth.NewService(domain_auth.NewRepository(database), cfg.JWT), cfg.JWT)
-	oauthHandler     := domain_auth.NewOAuthHandler(usersSvc, *cfg)
-	usersHandler     := domain_users.NewHandler(usersSvc)
-	delegHandler     := domain_delegations.NewHandler(domain_delegations.NewService(domain_delegations.NewRepository(database)))
-	deptHandler      := domain_departments.NewHandler(domain_departments.NewService(domain_departments.NewRepository(database)))
-	ccHandler        := domain_costcentres.NewHandler(domain_costcentres.NewService(domain_costcentres.NewRepository(database)))
-	locHandler       := domain_locations.NewHandler(domain_locations.NewService(domain_locations.NewRepository(database)))
-	curHandler       := domain_currencies.NewHandler(domain_currencies.NewService(domain_currencies.NewRepository(database)))
-	fxHandler        := domain_fxrates.NewHandler(domain_fxrates.NewService(domain_fxrates.NewRepository(database)))
-	catHandler       := domain_costcategories.NewHandler(domain_costcategories.NewService(domain_costcategories.NewRepository(database)))
-	smHandler        := domain_smtypes.NewHandler(domain_smtypes.NewService(domain_smtypes.NewRepository(database)))
-	rejHandler       := domain_rejections.NewHandler(domain_rejections.NewService(domain_rejections.NewRepository(database)))
-	venHandler       := domain_vendors.NewHandler(domain_vendors.NewService(domain_vendors.NewRepository(database)))
-	periodHandler    := domain_budgetperiods.NewHandler(domain_budgetperiods.NewService(domain_budgetperiods.NewRepository(database)))
-	budgetHandler    := domain_budgets.NewHandler(domain_budgets.NewService(domain_budgets.NewRepository(database)))
-	lineHandler      := domain_budgetlines.NewHandler(domain_budgetlines.NewService(domain_budgetlines.NewRepository(database)))
+	usersSvc := domain_users.NewService(domain_users.NewRepository(database))
+	authHandler := domain_auth.NewHandler(domain_auth.NewService(domain_auth.NewRepository(database), cfg.JWT), cfg.JWT)
+	oauthHandler := domain_auth.NewOAuthHandler(usersSvc, *cfg)
+	usersHandler := domain_users.NewHandler(usersSvc)
+	delegHandler := domain_delegations.NewHandler(domain_delegations.NewService(domain_delegations.NewRepository(database)))
+	deptHandler := domain_departments.NewHandler(domain_departments.NewService(domain_departments.NewRepository(database)))
+	ccHandler := domain_costcentres.NewHandler(domain_costcentres.NewService(domain_costcentres.NewRepository(database)))
+	locHandler := domain_locations.NewHandler(domain_locations.NewService(domain_locations.NewRepository(database)))
+	curHandler := domain_currencies.NewHandler(domain_currencies.NewService(domain_currencies.NewRepository(database)))
+	fxHandler := domain_fxrates.NewHandler(domain_fxrates.NewService(domain_fxrates.NewRepository(database)))
+	catHandler := domain_costcategories.NewHandler(domain_costcategories.NewService(domain_costcategories.NewRepository(database)))
+	smHandler := domain_smtypes.NewHandler(domain_smtypes.NewService(domain_smtypes.NewRepository(database)))
+	rejHandler := domain_rejections.NewHandler(domain_rejections.NewService(domain_rejections.NewRepository(database)))
+	venHandler := domain_vendors.NewHandler(domain_vendors.NewService(domain_vendors.NewRepository(database)))
+	periodHandler := domain_budgetperiods.NewHandler(domain_budgetperiods.NewService(domain_budgetperiods.NewRepository(database)))
+	budgetHandler := domain_budgets.NewHandler(domain_budgets.NewService(domain_budgets.NewRepository(database)))
+	lineHandler := domain_budgetlines.NewHandler(domain_budgetlines.NewService(domain_budgetlines.NewRepository(database)))
 	agreementHandler := domain_agreements.NewHandler(domain_agreements.NewService(domain_agreements.NewRepository(database)))
-	intakeHandler    := domain_intake.NewHandler(domain_intake.NewService(domain_intake.NewRepository(database)))
-	workflowHandler  := domain_workflow.NewHandler(domain_workflow.NewService(domain_workflow.NewRepository(database)))
-	poHandler        := domain_purchaseorders.NewHandler(domain_purchaseorders.NewService(domain_purchaseorders.NewRepository(database)))
-	actualsHandler   := domain_actuals.NewHandler(domain_actuals.NewService(domain_actuals.NewRepository(database)))
-	forecastHandler  := domain_forecasts.NewHandler(domain_forecasts.NewService(domain_forecasts.NewRepository(database)))
-	closeHandler     := domain_periodclose.NewHandler(domain_periodclose.NewService(domain_periodclose.NewRepository(database)))
-	auditHandler     := domain_auditlog.NewHandler(domain_auditlog.NewService(domain_auditlog.NewRepository(database)))
-	notifHandler     := domain_notifications.NewHandler(domain_notifications.NewService(domain_notifications.NewRepository(database)))
-	aiHandler        := domain_aijustify.NewHandler(domain_aijustify.NewService(domain_aijustify.NewRepository(database)))
-	adminHandler     := domain_admin.NewHandler(domain_admin.NewService(domain_admin.NewRepository(database)))
-	docHandler       := domain_documents.NewHandler(domain_documents.NewService(domain_documents.NewRepository(database)))
+	intakeHandler := domain_intake.NewHandler(domain_intake.NewService(domain_intake.NewRepository(database)))
+	workflowHandler := domain_workflow.NewHandler(domain_workflow.NewService(domain_workflow.NewRepository(database)))
+	poHandler := domain_purchaseorders.NewHandler(domain_purchaseorders.NewService(domain_purchaseorders.NewRepository(database)))
+	actualsHandler := domain_actuals.NewHandler(domain_actuals.NewService(domain_actuals.NewRepository(database)))
+	forecastHandler := domain_forecasts.NewHandler(domain_forecasts.NewService(domain_forecasts.NewRepository(database)))
+	closeHandler := domain_periodclose.NewHandler(domain_periodclose.NewService(domain_periodclose.NewRepository(database)))
+	auditHandler := domain_auditlog.NewHandler(domain_auditlog.NewService(domain_auditlog.NewRepository(database)))
+	notifHandler := domain_notifications.NewHandler(domain_notifications.NewService(domain_notifications.NewRepository(database)))
+	aiHandler := domain_aijustify.NewHandler(domain_aijustify.NewService(domain_aijustify.NewRepository(database)))
+	adminHandler := domain_admin.NewHandler(domain_admin.NewService(domain_admin.NewRepository(database)))
+	docHandler := domain_documents.NewHandler(domain_documents.NewService(domain_documents.NewRepository(database)))
 
 	r.Route("/v1", func(r chi.Router) {
 
