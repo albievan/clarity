@@ -7,17 +7,27 @@ import (
 	"time"
 )
 
-type Config struct {
-	Env     string
-	Port    int
-	BaseURL string
+// OAuthConfig holds credentials for a single OAuth2 provider.
+type OAuthConfig struct {
+	ClientID     string
+	ClientSecret string
+	RedirectURL  string
+}
 
-	DB DBConfig
-	JWT JWTConfig
-	Redis RedisConfig
-	S3    S3Config
-	RateLimit RateLimitConfig
+type Config struct {
+	Env         string
+	Port        int
+	BaseURL     string
+	FrontendURL string
+
+	DB          DBConfig
+	JWT         JWTConfig
+	Redis       RedisConfig
+	S3          S3Config
+	RateLimit   RateLimitConfig
 	Idempotency IdempotencyConfig
+	OAuthGoogle OAuthConfig
+	OAuthApple  OAuthConfig
 }
 
 type DBConfig struct {
@@ -26,9 +36,9 @@ type DBConfig struct {
 }
 
 type JWTConfig struct {
-	Secret          string
-	AccessTTL       time.Duration
-	RefreshTTL      time.Duration
+	Secret     string
+	AccessTTL  time.Duration
+	RefreshTTL time.Duration
 }
 
 type RedisConfig struct {
@@ -37,12 +47,12 @@ type RedisConfig struct {
 }
 
 type S3Config struct {
-	Endpoint       string
-	Bucket         string
-	AccessKey      string
-	SecretKey      string
-	Region         string
-	PresignTTL     time.Duration
+	Endpoint   string
+	Bucket     string
+	AccessKey  string
+	SecretKey  string
+	Region     string
+	PresignTTL time.Duration
 }
 
 type RateLimitConfig struct {
@@ -103,10 +113,13 @@ func Load() *Config {
 		}
 	}
 
+	baseURL := getEnv("APP_BASE_URL", "http://localhost:8080")
+
 	cfg := &Config{
-		Env:     getEnv("APP_ENV", "development"),
-		Port:    port,
-		BaseURL: getEnv("APP_BASE_URL", "http://localhost:8080"),
+		Env:         getEnv("APP_ENV", "development"),
+		Port:        port,
+		BaseURL:     baseURL,
+		FrontendURL: getEnv("FRONTEND_URL", "http://localhost:3000"),
 		DB: DBConfig{
 			Driver: getEnv("DB_DRIVER", ""),
 			DSN:    getEnv("DB_DSN", ""),
@@ -134,6 +147,16 @@ func Load() *Config {
 		},
 		Idempotency: IdempotencyConfig{
 			TTL: idempotencyTTL,
+		},
+		OAuthGoogle: OAuthConfig{
+			ClientID:     getEnv("GOOGLE_CLIENT_ID", ""),
+			ClientSecret: getEnv("GOOGLE_CLIENT_SECRET", ""),
+			RedirectURL:  getEnv("GOOGLE_REDIRECT_URL", baseURL+"/v1/auth/oauth/google/callback"),
+		},
+		OAuthApple: OAuthConfig{
+			ClientID:     getEnv("APPLE_CLIENT_ID", ""),
+			ClientSecret: getEnv("APPLE_CLIENT_SECRET", ""),
+			RedirectURL:  getEnv("APPLE_REDIRECT_URL", baseURL+"/v1/auth/oauth/apple/callback"),
 		},
 	}
 

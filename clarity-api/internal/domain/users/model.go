@@ -1,32 +1,84 @@
 package users
 
-import (
-	"time"
-)
+import "time"
 
-// Users is the canonical model for the users table.
-// Add, remove or rename fields to match the actual schema columns.
+// ── Core models ───────────────────────────────────────────────────────────────
+
+// User is the canonical representation of a platform user.
 type User struct {
-	ID        string    `json:"id"       db:"id"`
-	TenantID  string    `json:"-"        db:"tenant_id"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
-	// TODO: add domain-specific fields
+	ID            string     `json:"id"`
+	TenantID      string     `json:"-"`
+	Email         string     `json:"email"`
+	FirstName     string     `json:"first_name"`
+	LastName      string     `json:"last_name"`
+	DisplayName   string     `json:"display_name"`
+	Status        string     `json:"status"`         // active | locked | deprovisioned
+	AuthProvider  string     `json:"auth_provider"`  // local | google | apple
+	AvatarURL     string     `json:"avatar_url,omitempty"`
+	Roles         []string   `json:"roles,omitempty"`
+	LastLoginAt   *time.Time `json:"last_login_at,omitempty"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
 }
 
-// List filters for GET endpoints
+// OAuthIdentity is a linked social login identity for a user.
+// One user can have multiple identities (e.g. local + Google).
+type OAuthIdentity struct {
+	ID          string    `json:"id"`
+	UserID      string    `json:"user_id"`
+	TenantID    string    `json:"-"`
+	Provider    string    `json:"provider"`     // google | apple
+	ProviderUID string    `json:"provider_uid"` // subject claim from the provider
+	Email       string    `json:"email"`
+	DisplayName string    `json:"display_name"`
+	AvatarURL   string    `json:"avatar_url,omitempty"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+
+// RoleAssignment is a row from the user_roles join table.
+type RoleAssignment struct {
+	ID         string    `json:"id"`
+	UserID     string    `json:"user_id"`
+	TenantID   string    `json:"-"`
+	RoleName   string    `json:"role_name"`
+	GrantedBy  string    `json:"granted_by"`
+	GrantedAt  time.Time `json:"granted_at"`
+}
+
+// ── Filters & pagination ──────────────────────────────────────────────────────
+
+// Filter controls which users are returned by List/Search.
 type Filter struct {
-	TenantID string
-	Status   string
-	// TODO: add domain-specific filter fields
+	Search       string // searches email, first_name, last_name, display_name
+	Status       string // active | locked | deprovisioned | "" (all)
+	AuthProvider string // local | google | apple | "" (all)
+	RoleName     string // return only users with this role
 }
 
-// CreateRequest is the decoded request body for POST (create) endpoints.
+// ── HTTP request types ────────────────────────────────────────────────────────
+
+// CreateRequest is the body for POST /users (local user creation).
 type CreateRequest struct {
-	// TODO: define required fields
+	Email       string   `json:"email"`
+	FirstName   string   `json:"first_name"`
+	LastName    string   `json:"last_name"`
+	Password    string   `json:"password"`   // required for local users
+	Roles       []string `json:"roles"`      // optional — defaults to budget_requestor
 }
 
-// UpdateRequest is the decoded request body for PUT (update) endpoints.
+// UpdateRequest is the body for PUT /users/{userId}.
 type UpdateRequest struct {
-	// TODO: define fields that may be updated
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+}
+
+// AssignRoleRequest is the body for POST /users/{userId}/roles.
+type AssignRoleRequest struct {
+	RoleName string `json:"role_name"`
+}
+
+// LockRequest is the body for POST /users/{userId}/lock.
+type LockRequest struct {
+	DurationMinutes int    `json:"duration_minutes"` // 0 = indefinite
+	Reason          string `json:"reason"`
 }

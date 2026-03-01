@@ -51,7 +51,7 @@ func New(cfg *config.Config, database *db.DB, logger *slog.Logger) http.Handler 
 	r.Use(middleware.Logger)
 	r.Use(chimw.Recoverer)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*"},
+		AllowedOrigins:   []string{"https://*", "http://localhost:*", "http://127.0.0.1:*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "Idempotency-Key"},
 		ExposedHeaders:   []string{"X-RateLimit-Limit", "X-RateLimit-Remaining", "X-Request-ID"},
@@ -62,8 +62,10 @@ func New(cfg *config.Config, database *db.DB, logger *slog.Logger) http.Handler 
 	jwtSecret := cfg.JWT.Secret
 
 	// ── Domain handler wiring
+	usersSvc         := domain_users.NewService(domain_users.NewRepository(database))
 	authHandler      := domain_auth.NewHandler(domain_auth.NewService(domain_auth.NewRepository(database), cfg.JWT), cfg.JWT)
-	usersHandler     := domain_users.NewHandler(domain_users.NewService(domain_users.NewRepository(database)))
+	oauthHandler     := domain_auth.NewOAuthHandler(usersSvc, *cfg)
+	usersHandler     := domain_users.NewHandler(usersSvc)
 	delegHandler     := domain_delegations.NewHandler(domain_delegations.NewService(domain_delegations.NewRepository(database)))
 	deptHandler      := domain_departments.NewHandler(domain_departments.NewService(domain_departments.NewRepository(database)))
 	ccHandler        := domain_costcentres.NewHandler(domain_costcentres.NewService(domain_costcentres.NewRepository(database)))
@@ -100,6 +102,12 @@ func New(cfg *config.Config, database *db.DB, logger *slog.Logger) http.Handler 
 		r.Post("/auth/mfa/verify", authHandler.MFAVerify)
 		r.Get("/currencies", curHandler.List)
 
+		// ── OAuth 2.0 (Google + Apple) — public, browser-redirect flows
+		r.Get("/auth/oauth/google/init", oauthHandler.GoogleInit)
+		r.Get("/auth/oauth/google/callback", oauthHandler.GoogleCallback)
+		r.Get("/auth/oauth/apple/init", oauthHandler.AppleInit)
+		r.Post("/auth/oauth/apple/callback", oauthHandler.AppleCallback)
+
 		// ── Authenticated routes
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.Auth(jwtSecret))
@@ -124,6 +132,8 @@ func New(cfg *config.Config, database *db.DB, logger *slog.Logger) http.Handler 
 			r.Delete("/users/{userId}/roles/{assignmentId}", usersHandler.RevokeRole)
 			r.Post("/users/{userId}/lock", usersHandler.Lock)
 			r.Post("/users/{userId}/unlock", usersHandler.Unlock)
+			r.Get("/users/{userId}/identities", usersHandler.ListIdentities)
+			r.Delete("/users/{userId}/identities/{identityId}", usersHandler.DeleteIdentity)
 
 			// ── Approval Delegations
 			r.Get("/approval-delegations", delegHandler.List)

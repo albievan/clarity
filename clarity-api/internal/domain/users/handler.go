@@ -11,25 +11,28 @@ import (
 	"github.com/albievan/clarity/clarity-api/internal/response"
 )
 
-// Handler holds the HTTP handler functions for the users domain.
-type Handler struct {
-	svc Service
-}
+// Handler holds HTTP handlers for the users domain.
+type Handler struct{ svc Service }
 
-// NewHandler constructs a Handler.
-func NewHandler(svc Service) *Handler {
-	return &Handler{svc: svc}
-}
+func NewHandler(svc Service) *Handler { return &Handler{svc: svc} }
 
-// List handles GET list endpoint.
+// List handles GET /v1/users
+// Query params: ?search=alice&status=active&auth_provider=google&role=budget_owner&page=1&per_page=25
 func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 	c, err := claims.FromCtx(r.Context())
 	if err != nil {
 		response.Error(w, apierr.Unauthorized("missing claims"))
 		return
 	}
+	q := r.URL.Query()
+	f := Filter{
+		Search:       q.Get("search"),
+		Status:       q.Get("status"),
+		AuthProvider: q.Get("auth_provider"),
+		RoleName:     q.Get("role"),
+	}
 	p := pagination.Parse(r)
-	items, total, err := h.svc.List(r.Context(), c.TenantID, c.Subject, p.Page, p.PerPage)
+	items, total, err := h.svc.List(r.Context(), c.TenantID, c.Subject, f, p.Page, p.PerPage)
 	if err != nil {
 		response.Error(w, err)
 		return
@@ -37,23 +40,23 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 	response.PageOf(w, items, p.Page, p.PerPage, total)
 }
 
-// Get handles GET /users/{id}.
+// Get handles GET /v1/users/{userId}
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	c, err := claims.FromCtx(r.Context())
 	if err != nil {
 		response.Error(w, apierr.Unauthorized("missing claims"))
 		return
 	}
-	id := chi.URLParam(r, "id")
-	item, err := h.svc.Get(r.Context(), c.TenantID, c.Subject, id)
+	userID := chi.URLParam(r, "userId")
+	u, err := h.svc.Get(r.Context(), c.TenantID, c.Subject, userID)
 	if err != nil {
 		response.Error(w, err)
 		return
 	}
-	response.OK(w, item)
+	response.OK(w, u)
 }
 
-// Create handles POST /users.
+// Create handles POST /v1/users
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	c, err := claims.FromCtx(r.Context())
 	if err != nil {
@@ -65,82 +68,167 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, apierr.BadRequest("invalid request body"))
 		return
 	}
-	item, err := h.svc.Create(r.Context(), c.TenantID, c.Subject, req)
+	u, err := h.svc.Create(r.Context(), c.TenantID, c.Subject, req)
 	if err != nil {
 		response.Error(w, err)
 		return
 	}
-	response.Created(w, item)
+	response.Created(w, u)
 }
 
-// Update handles PUT /users/{id}.
+// Update handles PUT /v1/users/{userId}
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	c, err := claims.FromCtx(r.Context())
 	if err != nil {
 		response.Error(w, apierr.Unauthorized("missing claims"))
 		return
 	}
-	id := chi.URLParam(r, "id")
+	userID := chi.URLParam(r, "userId")
 	var req UpdateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		response.Error(w, apierr.BadRequest("invalid request body"))
 		return
 	}
-	item, err := h.svc.Update(r.Context(), c.TenantID, c.Subject, id, req)
+	u, err := h.svc.Update(r.Context(), c.TenantID, c.Subject, userID, req)
 	if err != nil {
 		response.Error(w, err)
 		return
 	}
-	response.OK(w, item)
+	response.OK(w, u)
 }
 
-// Delete handles DELETE /users/{id}.
-func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+// Deprovision handles DELETE /v1/users/{userId} (soft delete — status → deprovisioned)
+func (h *Handler) Deprovision(w http.ResponseWriter, r *http.Request) {
 	c, err := claims.FromCtx(r.Context())
 	if err != nil {
 		response.Error(w, apierr.Unauthorized("missing claims"))
 		return
 	}
-	id := chi.URLParam(r, "id")
-	if err := h.svc.Delete(r.Context(), c.TenantID, c.Subject, id); err != nil {
+	userID := chi.URLParam(r, "userId")
+	if err := h.svc.Deprovision(r.Context(), c.TenantID, c.Subject, userID); err != nil {
 		response.Error(w, err)
 		return
 	}
 	response.NoContent(w)
 }
 
-// ListRoles handles the ListRoles action.
-func (h *Handler) ListRoles(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement ListRoles
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "ListRoles not yet implemented"})
-}
-
-// AssignRole handles the AssignRole action.
-func (h *Handler) AssignRole(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement AssignRole
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "AssignRole not yet implemented"})
-}
-
-// RevokeRole handles the RevokeRole action.
-func (h *Handler) RevokeRole(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement RevokeRole
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "RevokeRole not yet implemented"})
-}
-
-// Lock handles the Lock action.
+// Lock handles POST /v1/users/{userId}/lock
 func (h *Handler) Lock(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement Lock
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "Lock not yet implemented"})
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	userID := chi.URLParam(r, "userId")
+	var req LockRequest
+	_ = json.NewDecoder(r.Body).Decode(&req) // body is optional
+	if err := h.svc.Lock(r.Context(), c.TenantID, c.Subject, userID, req); err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.NoContent(w)
 }
 
-// Unlock handles the Unlock action.
+// Unlock handles POST /v1/users/{userId}/unlock
 func (h *Handler) Unlock(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement Unlock
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "Unlock not yet implemented"})
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	userID := chi.URLParam(r, "userId")
+	if err := h.svc.Unlock(r.Context(), c.TenantID, c.Subject, userID); err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.NoContent(w)
 }
 
-// Deprovision handles the Deprovision action.
-func (h *Handler) Deprovision(w http.ResponseWriter, r *http.Request) {
-	// TODO: implement Deprovision
-	response.JSON(w, http.StatusNotImplemented, map[string]string{"message": "Deprovision not yet implemented"})
+// ── Role handlers ─────────────────────────────────────────────────────────────
+
+// ListRoles handles GET /v1/users/{userId}/roles
+func (h *Handler) ListRoles(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	userID := chi.URLParam(r, "userId")
+	roles, err := h.svc.ListRoles(r.Context(), c.TenantID, c.Subject, userID)
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.OK(w, roles)
+}
+
+// AssignRole handles POST /v1/users/{userId}/roles
+func (h *Handler) AssignRole(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	userID := chi.URLParam(r, "userId")
+	var req AssignRoleRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, apierr.BadRequest("invalid request body"))
+		return
+	}
+	ra, err := h.svc.AssignRole(r.Context(), c.TenantID, c.Subject, userID, req)
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.Created(w, ra)
+}
+
+// RevokeRole handles DELETE /v1/users/{userId}/roles/{assignmentId}
+func (h *Handler) RevokeRole(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	userID := chi.URLParam(r, "userId")
+	assignmentID := chi.URLParam(r, "assignmentId")
+	if err := h.svc.RevokeRole(r.Context(), c.TenantID, c.Subject, userID, assignmentID); err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.NoContent(w)
+}
+
+// ── OAuth identity handlers ───────────────────────────────────────────────────
+
+// ListIdentities handles GET /v1/users/{userId}/identities
+func (h *Handler) ListIdentities(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	userID := chi.URLParam(r, "userId")
+	ids, err := h.svc.ListIdentities(r.Context(), c.TenantID, c.Subject, userID)
+	if err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.OK(w, ids)
+}
+
+// DeleteIdentity handles DELETE /v1/users/{userId}/identities/{identityId}
+func (h *Handler) DeleteIdentity(w http.ResponseWriter, r *http.Request) {
+	c, err := claims.FromCtx(r.Context())
+	if err != nil {
+		response.Error(w, apierr.Unauthorized("missing claims"))
+		return
+	}
+	userID := chi.URLParam(r, "userId")
+	identityID := chi.URLParam(r, "identityId")
+	if err := h.svc.DeleteIdentity(r.Context(), c.TenantID, c.Subject, userID, identityID); err != nil {
+		response.Error(w, err)
+		return
+	}
+	response.NoContent(w)
 }

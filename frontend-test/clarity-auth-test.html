@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clarity — Auth Test Console</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #18181f;
+    --border: #242430;
+    --border2: #2e2e3f;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --accent: #5b6fff;
+    --accent2: #7c3aed;
+    --green: #22c55e;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --google: #4285f4;
+    --apple: #f5f5f7;
+    --radius: 6px;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* Grid noise texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, var(--border) 39px, var(--border) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, var(--border) 39px, var(--border) 40px);
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #root { position: relative; z-index: 1; }
+
+  /* ── Layout */
+  .shell { display: flex; height: 100vh; overflow: hidden; }
+
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .logo {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-mark {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 13px; font-weight: 500;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text);
+  }
+
+  .logo-sub {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  .nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; }
+
+  .nav-section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 12px 4px;
+    margin-top: 8px;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    user-select: none;
+  }
+
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+
+  .sidebar-footer {
+    padding: 12px 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .api-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    word-break: break-all;
+  }
+
+  /* ── Main area */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .topbar {
+    height: 52px;
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+
+  .topbar-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .breadcrumb { color: var(--muted); font-weight: 400; }
+
+  .token-indicator {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+  }
+
+  .dot.live { background: var(--green); animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  /* ── Cards & Panels */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface2);
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  .card-body { padding: 20px; }
+
+  /* ── Form elements */
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  input, select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input:focus, select:focus { border-color: var(--accent); }
+  input::placeholder { color: var(--muted); }
+
+  select option { background: var(--surface2); }
+
+  /* ── Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 9px 16px;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover:not(:disabled) { background: #4a5fe8; }
+
+  .btn-ghost { background: transparent; color: var(--muted); border-color: var(--border2); }
+  .btn-ghost:hover:not(:disabled) { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+
+  .btn-danger { background: transparent; color: var(--red); border-color: color-mix(in srgb, var(--red) 30%, transparent); }
+  .btn-danger:hover:not(:disabled) { background: color-mix(in srgb, var(--red) 10%, transparent); }
+
+  .btn-google {
+    background: var(--google);
+    color: #fff;
+    border-color: var(--google);
+    font-weight: 500;
+  }
+  .btn-google:hover:not(:disabled) { background: #2d6fd4; }
+
+  .btn-apple {
+    background: #1c1c1e;
+    color: #fff;
+    border-color: #3a3a3c;
+  }
+  .btn-apple:hover:not(:disabled) { background: #2c2c2e; }
+
+  .btn-sm { padding: 5px 11px; font-size: 12px; }
+  .btn-full { width: 100%; }
+
+  /* ── Grid layouts */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* ── Auth panel */
+  .auth-container {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100%;
+    padding: 40px;
+  }
+
+  .auth-panel {
+    width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .auth-header {
+    padding: 28px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    text-align: center;
+  }
+
+  .auth-header h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .auth-header p { font-size: 12px; color: var(--muted); }
+
+  .auth-body { padding: 24px 28px; }
+
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 20px 0;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .oauth-row { display: flex; gap: 10px; }
+  .oauth-row .btn { flex: 1; }
+
+  /* ── Status / response */
+  .response-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 180px;
+    overflow-y: auto;
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+
+  .response-box.success { border-color: color-mix(in srgb, var(--green) 40%, transparent); color: var(--green); }
+  .response-box.error { border-color: color-mix(in srgb, var(--red) 40%, transparent); color: #f87171; }
+
+  /* ── Toast */
+  .toast-container {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 1000;
+  }
+
+  .toast {
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid;
+    max-width: 320px;
+    animation: slideIn 0.2s ease;
+    backdrop-filter: blur(8px);
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .toast.success {
+    background: color-mix(in srgb, var(--green) 12%, var(--surface));
+    border-color: color-mix(in srgb, var(--green) 35%, transparent);
+    color: var(--green);
+  }
+
+  .toast.error {
+    background: color-mix(in srgb, var(--red) 12%, var(--surface));
+    border-color: color-mix(in srgb, var(--red) 35%, transparent);
+    color: #f87171;
+  }
+
+  /* ── User table */
+  .table-wrap { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 11px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+
+  .badge-green {
+    background: color-mix(in srgb, var(--green) 12%, transparent);
+    color: var(--green);
+    border-color: color-mix(in srgb, var(--green) 30%, transparent);
+  }
+  .badge-red {
+    background: color-mix(in srgb, var(--red) 12%, transparent);
+    color: var(--red);
+    border-color: color-mix(in srgb, var(--red) 30%, transparent);
+  }
+  .badge-amber {
+    background: color-mix(in srgb, var(--amber) 12%, transparent);
+    color: var(--amber);
+    border-color: color-mix(in srgb, var(--amber) 30%, transparent);
+  }
+  .badge-blue {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .badge-gray {
+    background: color-mix(in srgb, var(--muted) 12%, transparent);
+    color: var(--muted);
+    border-color: color-mix(in srgb, var(--muted) 30%, transparent);
+  }
+
+  .provider-icon { font-size: 13px; }
+
+  /* ── Search bar */
+  .search-row {
+    display: flex; gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .search-row input { flex: 1; }
+
+  /* ── Stat tiles */
+  .stat-row { display: flex; gap: 12px; margin-bottom: 20px; }
+
+  .stat-tile {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .stat-value { font-size: 28px; font-weight: 300; color: var(--text); line-height: 1; }
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ── Config panel */
+  .config-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .config-row label { min-width: 130px; flex-shrink: 0; padding-top: 9px; }
+  .config-row input { flex: 1; }
+
+  /* ── Modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500;
+    padding: 24px;
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    width: 460px;
+    max-width: 100%;
+    overflow: hidden;
+    animation: fadeUp 0.2s ease;
+  }
+
+  @keyframes fadeUp {
+    from { transform: translateY(12px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface2);
+  }
+
+  .modal-header h3 { font-size: 14px; font-weight: 600; }
+
+  .close-btn {
+    background: none; border: none; color: var(--muted);
+    font-size: 18px; cursor: pointer; padding: 0 4px;
+    line-height: 1;
+  }
+  .close-btn:hover { color: var(--text); }
+
+  .modal-body { padding: 20px; }
+  .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+
+  /* ── Loader */
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Empty state */
+  .empty {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 32px; margin-bottom: 12px; }
+  .empty-text { font-size: 13px; }
+
+  /* ── Tabs */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+
+  .tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .rows-per-page { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+  .rows-per-page select { width: auto; padding: 4px 8px; font-size: 12px; }
+
+  .pagination { display: flex; align-items: center; gap: 6px; }
+  .pagination .btn { padding: 5px 10px; font-size: 12px; }
+
+  .table-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
+
+// ── Config ────────────────────────────────────────────────────────────────────
+const DEFAULT_CONFIG = {
+  apiBase: 'http://localhost:8080/v1',
+  tenantId: 'default-tenant',
+  googleClientId: '',
+  appleClientId: '',
+};
+
+// ── API client ────────────────────────────────────────────────────────────────
+function makeApi(config, token) {
+  const headers = (extra = {}) => ({
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...extra,
+  });
+
+  const call = async (method, path, body) => {
+    const res = await fetch(`${config.apiBase}${path}`, {
+      method,
+      headers: headers(),
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.error?.message || `HTTP ${res.status}`);
+    return data;
+  };
+
+  return {
+    auth: {
+      login: (email, password) =>
+        call('POST', '/auth/login', { tenant_id: config.tenantId, email, password }),
+      logout: () => call('POST', '/auth/logout'),
+      refresh: (refreshToken) => call('POST', '/auth/refresh', { refresh_token: refreshToken }),
+    },
+    users: {
+      list: (params = {}) => {
+        const q = new URLSearchParams(params).toString();
+        return call('GET', `/users${q ? '?' + q : ''}`);
+      },
+      create: (data) => call('POST', '/users', data),
+      get: (id) => call('GET', `/users/${id}`),
+      update: (id, data) => call('PUT', `/users/${id}`, data),
+      deprovision: (id) => call('DELETE', `/users/${id}`),
+      lock: (id, req) => call('POST', `/users/${id}/lock`, req),
+      unlock: (id) => call('POST', `/users/${id}/unlock`),
+      roles: {
+        list: (id) => call('GET', `/users/${id}/roles`),
+        assign: (id, role) => call('POST', `/users/${id}/roles`, { role_name: role }),
+        revoke: (userId, assignId) => call('DELETE', `/users/${userId}/roles/${assignId}`),
+      },
+      identities: {
+        list: (id) => call('GET', `/users/${id}/identities`),
+        delete: (userId, identityId) => call('DELETE', `/users/${userId}/identities/${identityId}`),
+      },
+    },
+    oauth: {
+      googleInit: () =>
+        call('GET', `/auth/oauth/google/init?tenant_id=${encodeURIComponent(config.tenantId)}`),
+      appleInit: () =>
+        call('GET', `/auth/oauth/apple/init?tenant_id=${encodeURIComponent(config.tenantId)}`),
+    },
+  };
+}
+
+// ── Toast system ──────────────────────────────────────────────────────────────
+function ToastContainer({ toasts }) {
+  return (
+    <div className="toast-container">
+      {toasts.map(t => (
+        <div key={t.id} className={`toast ${t.type}`}>{t.message}</div>
+      ))}
+    </div>
+  );
+}
+
+function useToast() {
+  const [toasts, setToasts] = useState([]);
+  const show = useCallback((message, type = 'success') => {
+    const id = Date.now();
+    setToasts(p => [...p, { id, message, type }]);
+    setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 3500);
+  }, []);
+  return { toasts, show };
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function StatusBadge({ status }) {
+  const map = { active: 'badge-green', locked: 'badge-red', deprovisioned: 'badge-amber' };
+  return <span className={`badge ${map[status] || 'badge-gray'}`}>{status}</span>;
+}
+
+function ProviderBadge({ provider }) {
+  const icons = { local: '🔑', google: '🔵', apple: '🍎' };
+  const colors = { local: 'badge-gray', google: 'badge-blue', apple: 'badge-gray' };
+  return (
+    <span className={`badge ${colors[provider] || 'badge-gray'}`}>
+      <span className="provider-icon">{icons[provider] || '?'}</span>
+      {provider}
+    </span>
+  );
+}
+
+function Spinner() { return <span className="spinner" />; }
+
+function jsonFmt(obj) {
+  try { return JSON.stringify(obj, null, 2); } catch { return String(obj); }
+}
+
+// ── Pages ─────────────────────────────────────────────────────────────────────
+
+// Login page
+function LoginPage({ config, onLogin, toast }) {
+  const [email, setEmail] = useState('admin@example.com');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState(null);
+  const [oauthLoading, setOauthLoading] = useState(null);
+
+  const api = makeApi(config, null);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true); setResponse(null);
+    try {
+      const data = await api.auth.login(email, password);
+      setResponse({ ok: true, data });
+      if (data.access_token) {
+        toast.show('Logged in successfully', 'success');
+        onLogin(data);
+      } else if (data.mfa_required) {
+        toast.show('MFA required — check response', 'error');
+      }
+    } catch (err) {
+      setResponse({ ok: false, error: err.message });
+      toast.show(err.message, 'error');
+    } finally { setLoading(false); }
+  };
+
+  const handleOAuth = async (provider) => {
+    setOauthLoading(provider);
+    try {
+      const method = provider === 'google' ? api.oauth.googleInit : api.oauth.appleInit;
+      const data = await method();
+      if (data.redirect_url) {
+        window.location.href = data.redirect_url;
+      }
+    } catch (err) {
+      toast.show(err.message, 'error');
+      setOauthLoading(null);
+    }
+  };
+
+  // Handle OAuth callback — tokens arrive in URL fragment
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token=')) {
+      const params = new URLSearchParams(hash.slice(1));
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
+      if (accessToken) {
+        window.history.replaceState(null, '', window.location.pathname);
+        toast.show('OAuth login successful', 'success');
+        onLogin({ access_token: accessToken, refresh_token: refreshToken });
+      }
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    if (error) {
+      toast.show(`OAuth error: ${error}`, 'error');
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, []);
+
+  return (
+    <div className="auth-container">
+      <div className="auth-panel">
+        <div className="auth-header">
+          <h2>Clarity Auth Console</h2>
+          <p>Test authentication flows against your API</p>
+        </div>
+        <div className="auth-body">
+          <div className="oauth-row">
+            <button className="btn btn-google" onClick={() => handleOAuth('google')} disabled={!!oauthLoading}>
+              {oauthLoading === 'google' ? <Spinner /> : '🔵'} Google
+            </button>
+            <button className="btn btn-apple" onClick={() => handleOAuth('apple')} disabled={!!oauthLoading}>
+              {oauthLoading === 'apple' ? <Spinner /> : '🍎'} Apple
+            </button>
+          </div>
+
+          <div className="divider">or local account</div>
+
+          <form onSubmit={handleLogin}>
+            <div className="field">
+              <label>Email</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" required />
+            </div>
+            <div className="field">
+              <label>Password</label>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required />
+            </div>
+            <div className="field">
+              <label>Tenant ID</label>
+              <input value={config.tenantId} disabled style={{ opacity: 0.6 }} />
+            </div>
+            <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+              {loading ? <><Spinner /> Signing in…</> : '→ Sign in with password'}
+            </button>
+          </form>
+
+          {response && (
+            <div className={`response-box ${response.ok ? 'success' : 'error'}`}>
+              {jsonFmt(response.data || response.error)}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Create User Modal
+function CreateUserModal({ onClose, onCreated, api, toast }) {
+  const [form, setForm] = useState({ email: '', first_name: '', last_name: '', password: '', roles: 'budget_requestor' });
+  const [loading, setLoading] = useState(false);
+
+  const set = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const user = await api.users.create({
+        email: form.email,
+        first_name: form.first_name,
+        last_name: form.last_name,
+        password: form.password,
+        roles: form.roles ? form.roles.split(',').map(r => r.trim()) : [],
+      });
+      toast.show(`User ${user.email} created`, 'success');
+      onCreated(user);
+      onClose();
+    } catch (err) {
+      toast.show(err.message, 'error');
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-header">
+          <h3>Create Local User</h3>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+        <form onSubmit={submit}>
+          <div className="modal-body">
+            <div className="grid-2">
+              <div className="field">
+                <label>First Name</label>
+                <input value={form.first_name} onChange={set('first_name')} placeholder="Alice" required />
+              </div>
+              <div className="field">
+                <label>Last Name</label>
+                <input value={form.last_name} onChange={set('last_name')} placeholder="Smith" required />
+              </div>
+            </div>
+            <div className="field">
+              <label>Email</label>
+              <input type="email" value={form.email} onChange={set('email')} placeholder="alice@example.com" required />
+            </div>
+            <div className="field">
+              <label>Password (min 12 chars)</label>
+              <input type="password" value={form.password} onChange={set('password')} placeholder="••••••••••••" required />
+            </div>
+            <div className="field">
+              <label>Roles (comma-separated)</label>
+              <input value={form.roles} onChange={set('roles')} placeholder="budget_requestor, budget_owner" />
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? <><Spinner /> Creating…</> : 'Create User'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ── User Detail Modal
+function UserDetailModal({ user, onClose, api, toast, onRefresh }) {
+  const [roles, setRoles] = useState([]);
+  const [identities, setIdentities] = useState([]);
+  const [loadingRoles, setLoadingRoles] = useState(false);
+  const [newRole, setNewRole] = useState('');
+  const [tab, setTab] = useState('info');
+
+  const ROLE_OPTIONS = [
+    'it_admin', 'finance_controller', 'budget_owner', 'budget_approver',
+    'dept_head', 'budget_requestor',
+  ];
+
+  useEffect(() => {
+    if (tab === 'roles') fetchRoles();
+    if (tab === 'identities') fetchIdentities();
+  }, [tab]);
+
+  const fetchRoles = async () => {
+    setLoadingRoles(true);
+    try { setRoles(await api.users.roles.list(user.id)); }
+    catch { /* swallow */ }
+    finally { setLoadingRoles(false); }
+  };
+
+  const fetchIdentities = async () => {
+    try { setIdentities(await api.users.identities.list(user.id)); }
+    catch { /* swallow */ }
+  };
+
+  const assignRole = async () => {
+    if (!newRole) return;
+    try {
+      await api.users.roles.assign(user.id, newRole);
+      toast.show(`Role ${newRole} assigned`, 'success');
+      fetchRoles();
+      setNewRole('');
+    } catch (err) { toast.show(err.message, 'error'); }
+  };
+
+  const revokeRole = async (ra) => {
+    try {
+      await api.users.roles.revoke(user.id, ra.id);
+      toast.show(`Role ${ra.role_name} revoked`, 'success');
+      fetchRoles();
+    } catch (err) { toast.show(err.message, 'error'); }
+  };
+
+  const deleteIdentity = async (id) => {
+    try {
+      await api.users.identities.delete(user.id, id);
+      toast.show('Identity removed', 'success');
+      fetchIdentities();
+    } catch (err) { toast.show(err.message, 'error'); }
+  };
+
+  const doLock = async () => {
+    try {
+      await api.users.lock(user.id, { duration_minutes: 60, reason: 'Manual lock from console' });
+      toast.show('User locked for 60 min', 'success');
+      onRefresh(); onClose();
+    } catch (err) { toast.show(err.message, 'error'); }
+  };
+
+  const doUnlock = async () => {
+    try {
+      await api.users.unlock(user.id);
+      toast.show('User unlocked', 'success');
+      onRefresh(); onClose();
+    } catch (err) { toast.show(err.message, 'error'); }
+  };
+
+  const doDeprovision = async () => {
+    if (!window.confirm(`Deprovision ${user.email}? This cannot be undone.`)) return;
+    try {
+      await api.users.deprovision(user.id);
+      toast.show('User deprovisioned', 'success');
+      onRefresh(); onClose();
+    } catch (err) { toast.show(err.message, 'error'); }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal" style={{ width: 520 }}>
+        <div className="modal-header">
+          <div>
+            <h3>{user.display_name || user.email}</h3>
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2, fontFamily: 'var(--mono)' }}>
+              {user.id}
+            </div>
+          </div>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="tabs" style={{ padding: '0 20px', marginBottom: 0 }}>
+          {['info', 'roles', 'identities'].map(t => (
+            <div key={t} className={`tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </div>
+          ))}
+        </div>
+
+        <div className="modal-body" style={{ maxHeight: 380, overflowY: 'auto' }}>
+          {tab === 'info' && (
+            <div>
+              <div className="grid-2" style={{ gap: 12, marginBottom: 16 }}>
+                {[
+                  ['Email', user.email],
+                  ['Status', <StatusBadge key="s" status={user.status} />],
+                  ['Provider', <ProviderBadge key="p" provider={user.auth_provider} />],
+                  ['Last Login', user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never'],
+                  ['Created', new Date(user.created_at).toLocaleDateString()],
+                  ['Roles', (user.roles || []).join(', ') || '—'],
+                ].map(([k, v]) => (
+                  <div key={k} style={{ background: 'var(--bg)', borderRadius: 'var(--radius)', padding: '10px 12px', border: '1px solid var(--border)' }}>
+                    <div style={{ fontSize: 10, color: 'var(--muted)', fontFamily: 'var(--mono)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>{k}</div>
+                    <div style={{ fontSize: 13 }}>{v}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {user.status !== 'locked' && user.status !== 'deprovisioned' && (
+                  <button className="btn btn-ghost btn-sm" onClick={doLock}>🔒 Lock</button>
+                )}
+                {user.status === 'locked' && (
+                  <button className="btn btn-ghost btn-sm" onClick={doUnlock}>🔓 Unlock</button>
+                )}
+                {user.status !== 'deprovisioned' && (
+                  <button className="btn btn-danger btn-sm" onClick={doDeprovision}>⛔ Deprovision</button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {tab === 'roles' && (
+            <div>
+              {loadingRoles ? (
+                <div style={{ textAlign: 'center', padding: 24 }}><Spinner /></div>
+              ) : (
+                <>
+                  <div style={{ marginBottom: 12, display: 'flex', gap: 8 }}>
+                    <select value={newRole} onChange={e => setNewRole(e.target.value)} style={{ flex: 1 }}>
+                      <option value="">Select role to assign…</option>
+                      {ROLE_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                    <button className="btn btn-primary btn-sm" onClick={assignRole} disabled={!newRole}>
+                      Assign
+                    </button>
+                  </div>
+                  {roles.length === 0 ? (
+                    <div className="empty"><div className="empty-icon">👤</div><div className="empty-text">No roles assigned</div></div>
+                  ) : (
+                    <table>
+                      <thead><tr><th>Role</th><th>Granted At</th><th></th></tr></thead>
+                      <tbody>
+                        {roles.map(ra => (
+                          <tr key={ra.id}>
+                            <td><span className="badge badge-blue">{ra.role_name}</span></td>
+                            <td style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>
+                              {new Date(ra.granted_at).toLocaleDateString()}
+                            </td>
+                            <td><button className="btn btn-danger btn-sm" onClick={() => revokeRole(ra)}>Revoke</button></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
+          {tab === 'identities' && (
+            <div>
+              {identities.length === 0 ? (
+                <div className="empty"><div className="empty-icon">🔗</div><div className="empty-text">No linked OAuth identities</div></div>
+              ) : (
+                <table>
+                  <thead><tr><th>Provider</th><th>Email</th><th>Linked</th><th></th></tr></thead>
+                  <tbody>
+                    {identities.map(id => (
+                      <tr key={id.id}>
+                        <td><ProviderBadge provider={id.provider} /></td>
+                        <td style={{ fontSize: 13 }}>{id.email}</td>
+                        <td style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>
+                          {new Date(id.created_at).toLocaleDateString()}
+                        </td>
+                        <td>
+                          <button className="btn btn-danger btn-sm" onClick={() => deleteIdentity(id.id)}>
+                            Unlink
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="modal-footer">
+          <button className="btn btn-ghost" onClick={onClose}>Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Users Page ────────────────────────────────────────────────────────────────
+function UsersPage({ api, toast }) {
+  const [users, setUsers] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [providerFilter, setProviderFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [perPage] = useState(20);
+  const [showCreate, setShowCreate] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const searchTimer = useRef(null);
+
+  const fetchUsers = useCallback(async (params = {}) => {
+    setLoading(true);
+    try {
+      const q = {
+        page: String(params.page || page),
+        per_page: String(perPage),
+      };
+      if (params.search ?? search) q.search = params.search ?? search;
+      if (params.status ?? statusFilter) q.status = params.status ?? statusFilter;
+      if (params.provider ?? providerFilter) q.auth_provider = params.provider ?? providerFilter;
+      const res = await api.users.list(q);
+      setUsers(res.data || []);
+      setTotal(res.pagination?.total || 0);
+    } catch (err) {
+      toast.show(err.message, 'error');
+    } finally { setLoading(false); }
+  }, [page, perPage, search, statusFilter, providerFilter]);
+
+  useEffect(() => { fetchUsers(); }, [page]);
+
+  const handleSearch = (val) => {
+    setSearch(val);
+    clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => {
+      setPage(1);
+      fetchUsers({ search: val, page: 1 });
+    }, 400);
+  };
+
+  const handleFilter = (key, val) => {
+    if (key === 'status') setStatusFilter(val);
+    if (key === 'provider') setProviderFilter(val);
+    setPage(1);
+    fetchUsers({ [key]: val, page: 1 });
+  };
+
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
+  const localCount = users.filter(u => u.auth_provider === 'local').length;
+  const googleCount = users.filter(u => u.auth_provider === 'google').length;
+  const appleCount = users.filter(u => u.auth_provider === 'apple').length;
+
+  return (
+    <div>
+      {showCreate && (
+        <CreateUserModal
+          api={api}
+          toast={toast}
+          onClose={() => setShowCreate(false)}
+          onCreated={() => { setPage(1); fetchUsers({ page: 1 }); }}
+        />
+      )}
+      {selectedUser && (
+        <UserDetailModal
+          user={selectedUser}
+          api={api}
+          toast={toast}
+          onClose={() => setSelectedUser(null)}
+          onRefresh={() => fetchUsers()}
+        />
+      )}
+
+      <div className="stat-row">
+        <div className="stat-tile">
+          <div className="stat-label">Total Users</div>
+          <div className="stat-value">{total}</div>
+          <div className="stat-sub">across all providers</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">Local 🔑</div>
+          <div className="stat-value">{localCount}</div>
+          <div className="stat-sub">password accounts</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">Google 🔵</div>
+          <div className="stat-value">{googleCount}</div>
+          <div className="stat-sub">OAuth users</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">Apple 🍎</div>
+          <div className="stat-value">{appleCount}</div>
+          <div className="stat-sub">OAuth users</div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header">
+          <span className="card-title">User Directory</span>
+          <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}>
+            + New User
+          </button>
+        </div>
+
+        <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border)', display: 'flex', gap: 10, background: 'var(--surface2)' }}>
+          <input
+            style={{ flex: 1 }}
+            placeholder="Search name, email…"
+            value={search}
+            onChange={e => handleSearch(e.target.value)}
+          />
+          <select value={statusFilter} onChange={e => handleFilter('status', e.target.value)} style={{ width: 140 }}>
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="locked">Locked</option>
+            <option value="deprovisioned">Deprovisioned</option>
+          </select>
+          <select value={providerFilter} onChange={e => handleFilter('provider', e.target.value)} style={{ width: 140 }}>
+            <option value="">All providers</option>
+            <option value="local">Local</option>
+            <option value="google">Google</option>
+            <option value="apple">Apple</option>
+          </select>
+        </div>
+
+        <div className="table-wrap">
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: 40 }}><Spinner /></div>
+          ) : users.length === 0 ? (
+            <div className="empty">
+              <div className="empty-icon">👥</div>
+              <div className="empty-text">No users found. Create one or adjust filters.</div>
+            </div>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Provider</th>
+                  <th>Status</th>
+                  <th>Roles</th>
+                  <th>Last Login</th>
+                  <th>Created</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map(u => (
+                  <tr key={u.id}>
+                    <td>
+                      <div style={{ fontWeight: 500, fontSize: 13 }}>{u.display_name || u.email}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>{u.email}</div>
+                    </td>
+                    <td><ProviderBadge provider={u.auth_provider} /></td>
+                    <td><StatusBadge status={u.status} /></td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                        {(u.roles || []).slice(0, 2).map(r => (
+                          <span key={r} className="badge badge-gray" style={{ fontSize: 9 }}>
+                            {r.replace('_', ' ')}
+                          </span>
+                        ))}
+                        {(u.roles || []).length > 2 && (
+                          <span className="badge badge-gray" style={{ fontSize: 9 }}>+{u.roles.length - 2}</span>
+                        )}
+                      </div>
+                    </td>
+                    <td style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>
+                      {u.last_login_at ? new Date(u.last_login_at).toLocaleDateString() : '—'}
+                    </td>
+                    <td style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>
+                      {new Date(u.created_at).toLocaleDateString()}
+                    </td>
+                    <td>
+                      <button className="btn btn-ghost btn-sm" onClick={() => setSelectedUser(u)}>
+                        View →
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        <div className="table-footer">
+          <span>{total} user{total !== 1 ? 's' : ''} total</span>
+          <div className="pagination">
+            <button className="btn btn-ghost btn-sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>‹</button>
+            <span style={{ padding: '0 8px', fontFamily: 'var(--mono)', fontSize: 12 }}>
+              {page} / {totalPages}
+            </span>
+            <button className="btn btn-ghost btn-sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Config Page ───────────────────────────────────────────────────────────────
+function ConfigPage({ config, onSave, token }) {
+  const [form, setForm] = useState(config);
+
+  const set = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }));
+
+  return (
+    <div>
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-header"><span className="card-title">API Configuration</span></div>
+        <div className="card-body">
+          <div className="field">
+            <label>API Base URL</label>
+            <input value={form.apiBase} onChange={set('apiBase')} placeholder="http://localhost:8080/v1" />
+          </div>
+          <div className="field">
+            <label>Tenant ID</label>
+            <input value={form.tenantId} onChange={set('tenantId')} placeholder="default-tenant" />
+          </div>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-header"><span className="card-title">OAuth Providers</span></div>
+        <div className="card-body">
+          <div style={{ marginBottom: 20, padding: '12px 16px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', fontSize: 12, color: 'var(--muted)', lineHeight: 1.7 }}>
+            <strong style={{ color: 'var(--text)' }}>Setup required in your API .env:</strong><br/>
+            <code style={{ fontFamily: 'var(--mono)', fontSize: 11 }}>GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET</code><br/>
+            <code style={{ fontFamily: 'var(--mono)', fontSize: 11 }}>APPLE_CLIENT_ID, APPLE_CLIENT_SECRET</code><br/>
+            <code style={{ fontFamily: 'var(--mono)', fontSize: 11 }}>FRONTEND_URL=http://localhost:3000</code>
+          </div>
+          <div className="field">
+            <label>Google Redirect URI (register in Google Cloud Console)</label>
+            <input value={`${form.apiBase.replace('/v1','')}/v1/auth/oauth/google/callback`} readOnly style={{ opacity: 0.7, fontFamily: 'var(--mono)', fontSize: 12 }} />
+          </div>
+          <div className="field">
+            <label>Apple Redirect URI (register in Apple Developer)</label>
+            <input value={`${form.apiBase.replace('/v1','')}/v1/auth/oauth/apple/callback`} readOnly style={{ opacity: 0.7, fontFamily: 'var(--mono)', fontSize: 12 }} />
+          </div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header"><span className="card-title">Current Session</span></div>
+        <div className="card-body">
+          <div className="field">
+            <label>Access Token</label>
+            <textarea
+              readOnly
+              value={token || '— not authenticated —'}
+              style={{
+                width: '100%', background: 'var(--bg)', border: '1px solid var(--border2)',
+                borderRadius: 'var(--radius)', padding: '9px 12px', color: token ? 'var(--green)' : 'var(--muted)',
+                fontFamily: 'var(--mono)', fontSize: 11, resize: 'vertical', minHeight: 80,
+              }}
+            />
+          </div>
+          <button className="btn btn-primary" onClick={() => onSave(form)}>Save Configuration</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Auth Flow Tester ──────────────────────────────────────────────────────────
+function AuthFlowPage({ api, token, onLogout, toast }) {
+  const [response, setResponse] = useState(null);
+  const [loading, setLoading] = useState(null);
+
+  const call = async (label, fn) => {
+    setLoading(label); setResponse(null);
+    try {
+      const data = await fn();
+      setResponse({ label, ok: true, data });
+      toast.show(`${label} OK`, 'success');
+      if (label === 'Logout') onLogout();
+    } catch (err) {
+      setResponse({ label, ok: false, error: err.message });
+      toast.show(err.message, 'error');
+    } finally { setLoading(null); }
+  };
+
+  const actions = [
+    { label: 'List Sessions', fn: () => api.auth && fetch(`${api._base}/auth/sessions`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()), icon: '📋' },
+    { label: 'Logout', fn: () => api.auth.logout(), icon: '🚪', danger: true },
+  ];
+
+  return (
+    <div>
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-header"><span className="card-title">Session Actions</span></div>
+        <div className="card-body">
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
+            {actions.map(a => (
+              <button
+                key={a.label}
+                className={`btn ${a.danger ? 'btn-danger' : 'btn-ghost'}`}
+                disabled={loading === a.label}
+                onClick={() => call(a.label, a.fn)}
+              >
+                {loading === a.label ? <Spinner /> : a.icon} {a.label}
+              </button>
+            ))}
+          </div>
+
+          {response && (
+            <div className={`response-box ${response.ok ? 'success' : 'error'}`}>
+              {jsonFmt(response.data || response.error)}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header"><span className="card-title">Token Inspector</span></div>
+        <div className="card-body">
+          {token ? (() => {
+            try {
+              const [, payload] = token.split('.');
+              const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+              const exp = new Date(decoded.exp * 1000);
+              const isExpired = Date.now() > decoded.exp * 1000;
+              return (
+                <div>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                    <span className="badge badge-blue">sub: {decoded.sub}</span>
+                    <span className="badge badge-gray">tid: {decoded.tid}</span>
+                    <span className={`badge ${isExpired ? 'badge-red' : 'badge-green'}`}>
+                      {isExpired ? 'EXPIRED' : `expires ${exp.toLocaleTimeString()}`}
+                    </span>
+                    {decoded.roles?.map(r => <span key={r} className="badge badge-amber">{r}</span>)}
+                  </div>
+                  <div className="response-box success" style={{ maxHeight: 'none' }}>
+                    {jsonFmt(decoded)}
+                  </div>
+                </div>
+              );
+            } catch {
+              return <div className="response-box">Could not decode token</div>;
+            }
+          })() : (
+            <div style={{ color: 'var(--muted)', fontSize: 13 }}>Not authenticated</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main App ──────────────────────────────────────────────────────────────────
+function App() {
+  const [config, setConfig] = useState(() => {
+    try { return { ...DEFAULT_CONFIG, ...JSON.parse(localStorage.getItem('clarity_config') || '{}') }; }
+    catch { return DEFAULT_CONFIG; }
+  });
+  const [token, setToken] = useState(() => localStorage.getItem('clarity_token') || '');
+  const [refreshToken, setRefreshToken] = useState(() => localStorage.getItem('clarity_refresh') || '');
+  const [page, setPage] = useState('login');
+  const toast = useToast();
+
+  const api = makeApi(config, token);
+
+  useEffect(() => {
+    if (token) setPage('users');
+    else setPage('login');
+  }, [token]);
+
+  const handleLogin = (data) => {
+    if (data.access_token) {
+      setToken(data.access_token);
+      setRefreshToken(data.refresh_token || '');
+      localStorage.setItem('clarity_token', data.access_token);
+      localStorage.setItem('clarity_refresh', data.refresh_token || '');
+      setPage('users');
+    }
+  };
+
+  const handleLogout = () => {
+    setToken(''); setRefreshToken('');
+    localStorage.removeItem('clarity_token');
+    localStorage.removeItem('clarity_refresh');
+    setPage('login');
+    toast.show('Signed out', 'success');
+  };
+
+  const saveConfig = (newCfg) => {
+    setConfig(newCfg);
+    localStorage.setItem('clarity_config', JSON.stringify(newCfg));
+    toast.show('Configuration saved', 'success');
+  };
+
+  const NAV = token ? [
+    { id: 'users',   label: 'Users',       icon: '👥' },
+    { id: 'auth',    label: 'Auth Flow',   icon: '🔐' },
+    { id: 'config',  label: 'Config',      icon: '⚙️' },
+  ] : [
+    { id: 'login',   label: 'Sign In',     icon: '→' },
+    { id: 'config',  label: 'Config',      icon: '⚙️' },
+  ];
+
+  return (
+    <div className="shell">
+      <aside className="sidebar">
+        <div className="logo">
+          <div className="logo-mark">C</div>
+          <div>
+            <div className="logo-text">Clarity</div>
+            <div className="logo-sub">Auth Console</div>
+          </div>
+        </div>
+
+        <nav className="nav">
+          {NAV.map(n => (
+            <div
+              key={n.id}
+              className={`nav-item ${page === n.id ? 'active' : ''}`}
+              onClick={() => setPage(n.id)}
+            >
+              <span className="nav-icon">{n.icon}</span>
+              {n.label}
+            </div>
+          ))}
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="api-badge">{config.apiBase}</div>
+        </div>
+      </aside>
+
+      <div className="main">
+        <div className="topbar">
+          <div className="topbar-title">
+            <span className="breadcrumb">Clarity /</span>
+            {NAV.find(n => n.id === page)?.label || page}
+          </div>
+          <div className="token-indicator">
+            <div className={`dot ${token ? 'live' : ''}`} />
+            {token ? 'Authenticated' : 'Not signed in'}
+          </div>
+        </div>
+
+        <div className="content">
+          {page === 'login' && !token && (
+            <LoginPage config={config} onLogin={handleLogin} toast={toast} />
+          )}
+          {page === 'users' && token && (
+            <UsersPage api={api} toast={toast} />
+          )}
+          {page === 'auth' && token && (
+            <AuthFlowPage api={api} token={token} onLogout={handleLogout} toast={toast} />
+          )}
+          {page === 'config' && (
+            <ConfigPage config={config} onSave={saveConfig} token={token} />
+          )}
+        </div>
+      </div>
+
+      <ToastContainer toasts={toast.toasts} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
