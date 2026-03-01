@@ -23,7 +23,7 @@ The following tools must be installed on your development machine before buildin
 |------|----------------|---------|---------|
 | **Go** | 1.22 | Compiler and toolchain | https://go.dev/dl/ |
 | **Git** | 2.x | Source control | https://git-scm.com/ |
-| **PostgreSQL** or **MariaDB** | PG 15+ / MariaDB 11.4+ | Primary database | See [Database](#database) |
+| **SQL Server** | 2019+ (2022 recommended) | Primary database | See [Database](#database) |
 
 ### Recommended for Development
 
@@ -195,48 +195,70 @@ All configuration is driven by environment variables. No config files are requir
 
 ## Database
 
-The API supports **PostgreSQL 15+** and **MariaDB 11.4 LTS**. The schema was designed for SQL Server 2022 but the Go driver layer uses `lib/pq` (PostgreSQL-compatible) by default.
+The API uses **Microsoft SQL Server 2022** via the official `github.com/microsoft/go-mssqldb` driver. The driver registers under the name `sqlserver`.
 
-### PostgreSQL DSN
+### DSN Formats
 
-```
-DB_DRIVER=postgres
-DB_DSN=postgres://clarity_user:secret@localhost:5432/clarity?sslmode=disable
-```
-
-### MariaDB / MySQL DSN
+Both formats are accepted by the driver. URL-style is recommended:
 
 ```
-DB_DRIVER=mysql
-DB_DSN=clarity_user:secret@tcp(localhost:3306)/clarity?parseTime=true&loc=UTC&charset=utf8mb4
+# URL-style (recommended)
+DB_DRIVER=sqlserver
+DB_DSN=sqlserver://clarity_user:YourPassword@hostname:1433?database=clarity
+
+# ADO-style (alternative)
+DB_DRIVER=sqlserver
+DB_DSN=server=hostname;user id=clarity_user;password=YourPassword;port=1433;database=clarity
 ```
 
-> **Note:** If using MySQL/MariaDB you will need to add the `github.com/go-sql-driver/mysql` driver to `go.mod` and import it in `internal/db/db.go`. See the TODO comment in that file.
+Common DSN query parameters:
 
-### Running PostgreSQL Locally with Docker
+| Parameter | Example | Description |
+|-----------|---------|-------------|
+| `database` | `database=clarity` | Target database name |
+| `encrypt` | `encrypt=true` | Force TLS encryption (recommended for prod) |
+| `TrustServerCertificate` | `TrustServerCertificate=true` | Skip cert validation (dev only) |
+| `connection timeout` | `connection+timeout=30` | Connect timeout in seconds |
+
+Example for a local dev instance with a self-signed certificate:
+
+```
+DB_DSN=sqlserver://sa:YourPassword@localhost:1433?database=clarity&TrustServerCertificate=true
+```
+
+### Running SQL Server Locally with Docker
 
 ```bash
 docker run -d \
-  --name clarity-pg \
-  -e POSTGRES_USER=clarity_user \
-  -e POSTGRES_PASSWORD=secret \
-  -e POSTGRES_DB=clarity \
-  -p 5432:5432 \
-  postgres:15-alpine
+  --name clarity-mssql \
+  -e ACCEPT_EULA=Y \
+  -e MSSQL_SA_PASSWORD=YourStr0ngPassword \
+  -p 1433:1433 \
+  mcr.microsoft.com/mssql/server:2022-latest
 ```
 
-### Running MariaDB Locally with Docker
+Then create the database and user:
+
+```sql
+CREATE DATABASE clarity;
+GO
+CREATE LOGIN clarity_user WITH PASSWORD = 'YourStr0ngPassword';
+GO
+USE clarity;
+CREATE USER clarity_user FOR LOGIN clarity_user;
+ALTER ROLE db_owner ADD MEMBER clarity_user;
+GO
+```
+
+### First-time Dependency Setup
+
+The SQL Server driver requires `golang.org/x/crypto` and `golang.org/x/text`. After extracting the zip, run once on your machine:
 
 ```bash
-docker run -d \
-  --name clarity-mariadb \
-  -e MARIADB_USER=clarity_user \
-  -e MARIADB_PASSWORD=secret \
-  -e MARIADB_DATABASE=clarity \
-  -e MARIADB_ROOT_PASSWORD=root \
-  -p 3306:3306 \
-  mariadb:11.4
+go mod tidy
 ```
+
+This will download all transitive dependencies and update `go.sum`. You only need to do this once.
 
 ---
 

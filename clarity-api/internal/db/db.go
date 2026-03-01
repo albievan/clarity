@@ -4,7 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/lib/pq"
+	// Both drivers are registered at startup. The active driver is selected
+	// at runtime via DB_DRIVER in your .env file:
+	//   DB_DRIVER=sqlserver   → Microsoft SQL Server / Azure SQL
+	//   DB_DRIVER=mysql       → MariaDB / MySQL
+	_ "github.com/go-sql-driver/mysql"  // registers "mysql"
+	_ "github.com/microsoft/go-mssqldb" // registers "sqlserver"
 
 	"github.com/albievan/clarity/clarity-api/internal/config"
 )
@@ -15,10 +20,23 @@ type DB struct {
 }
 
 // Connect opens a database connection.
-// Supported drivers: postgres (lib/pq). Wire in additional drivers as needed.
+//
+// The driver is chosen entirely by DB_DRIVER in your .env:
+//
+//	# SQL Server / Azure SQL
+//	DB_DRIVER=sqlserver
+//	DB_DSN=sqlserver://user:pass@host:1433?database=clarity
+//	DB_DSN=sqlserver://user:pass@host:1433?database=clarity&TrustServerCertificate=true  # self-signed cert
+//
+//	# MariaDB / MySQL
+//	DB_DRIVER=mysql
+//	DB_DSN=user:pass@tcp(host:3306)/clarity?parseTime=true&loc=UTC&charset=utf8mb4
 func Connect(cfg config.DBConfig) (*DB, error) {
+	if cfg.Driver == "" {
+		return nil, fmt.Errorf("DB_DRIVER is not set")
+	}
 	if cfg.DSN == "" {
-		return nil, fmt.Errorf("DB_DSN is empty")
+		return nil, fmt.Errorf("DB_DSN is not set")
 	}
 	sqlDB, err := sql.Open(cfg.Driver, cfg.DSN)
 	if err != nil {

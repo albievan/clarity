@@ -108,7 +108,7 @@ func Load() *Config {
 		Port:    port,
 		BaseURL: getEnv("APP_BASE_URL", "http://localhost:8080"),
 		DB: DBConfig{
-			Driver: getEnv("DB_DRIVER", "mysql"),
+			Driver: getEnv("DB_DRIVER", ""),
 			DSN:    getEnv("DB_DSN", ""),
 		},
 		JWT: JWTConfig{
