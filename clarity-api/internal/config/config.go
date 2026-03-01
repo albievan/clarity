@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -15,10 +16,11 @@ type OAuthConfig struct {
 }
 
 type Config struct {
-	Env         string
-	Port        int
-	BaseURL     string
-	FrontendURL string
+	Env          string
+	Port         int
+	BaseURL      string
+	FrontendURL  string
+	CORSOrigins  []string // Additional allowed CORS origins (comma-separated via CORS_ALLOWED_ORIGINS)
 
 	DB          DBConfig
 	JWT         JWTConfig
@@ -114,12 +116,28 @@ func Load() *Config {
 	}
 
 	baseURL := getEnv("APP_BASE_URL", "http://localhost:8080")
+	frontendURL := getEnv("FRONTEND_URL", "http://localhost:3000")
+
+	// CORS_ALLOWED_ORIGINS is a comma-separated list of additional origins to allow.
+	// The API always allows its own BaseURL and FrontendURL.
+	// In development you can set this to "*" to allow any origin.
+	corsRaw := getEnv("CORS_ALLOWED_ORIGINS", "")
+	var corsOrigins []string
+	if corsRaw != "" {
+		for _, o := range strings.Split(corsRaw, ",") {
+			o = strings.TrimSpace(o)
+			if o != "" {
+				corsOrigins = append(corsOrigins, o)
+			}
+		}
+	}
 
 	cfg := &Config{
 		Env:         getEnv("APP_ENV", "development"),
 		Port:        port,
 		BaseURL:     baseURL,
-		FrontendURL: getEnv("FRONTEND_URL", "http://localhost:3000"),
+		FrontendURL: frontendURL,
+		CORSOrigins: corsOrigins,
 		DB: DBConfig{
 			Driver: getEnv("DB_DRIVER", ""),
 			DSN:    getEnv("DB_DSN", ""),

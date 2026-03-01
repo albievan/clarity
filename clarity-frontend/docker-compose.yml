@@ -1,0 +1,69 @@
+version: "3.9"
+
+# ── Clarity Frontend — docker-compose ────────────────────────────────────────
+#
+# Starts the auth test console on http://localhost:3000
+#
+# Usage:
+#   docker-compose up -d           # start in background
+#   docker-compose logs -f         # tail logs
+#   docker-compose down            # stop and remove containers
+#
+# To also run the API in Docker (optional), uncomment the 'api' service below
+# and ensure clarity-api:latest is built first:
+#   cd ../clarity-api && docker build -t clarity-api:latest .
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── Auth Test Console (this repo) ──────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: clarity-frontend:latest
+    container_name: clarity-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"   # change FRONTEND_PORT env var to use a different host port
+    volumes:
+      # Mount your own HTML file here to override the built-in one at runtime:
+      # - ./clarity-auth-test.html:/usr/share/nginx/html/index.html:ro
+      #
+      # Mount custom nginx config (optional):
+      # - ./nginx.conf:/etc/nginx/conf.d/clarity.conf:ro
+      []
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    labels:
+      - "com.clarity.service=frontend"
+      - "com.clarity.description=Auth test console"
+
+  # ── Clarity API (optional — uncomment to run API in Docker too) ─────────────
+  # api:
+  #   image: clarity-api:latest
+  #   container_name: clarity-api
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8080:8080"
+  #   env_file:
+  #     - ../clarity-api/.env          # path to your API .env file
+  #   environment:
+  #     - FRONTEND_URL=http://localhost:3000
+  #     - CORS_ALLOWED_ORIGINS=http://localhost:3000
+  #   healthcheck:
+  #     test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+  #     interval: 30s
+  #     timeout: 5s
+  #     retries: 3
+  #   depends_on:
+  #     frontend:
+  #       condition: service_healthy
+
+networks:
+  default:
+    name: clarity-dev
